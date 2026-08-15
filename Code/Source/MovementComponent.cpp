@@ -63,7 +63,7 @@ namespace ModularCharacterController
             {
                 editContext->Class<MovementComponent>("Character Controller/Core", "[Description of functionality provided by this component]")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                    ->Attribute(AZ::Edit::Attributes::Category, "ModularCharacterController")
+                    ->Attribute(AZ::Edit::Attributes::Category, "Character Controller/Core")
                     ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/Component_Placeholder.svg")
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
 
