@@ -1,0 +1,18 @@
+{
+    "Amazon": {
+        "AssetProcessor": {
+            "Settings": {
+                "ScanFolder ModularCharacterController/Assets": {
+                    "watch": "@GEMROOT:ModularCharacterController@/Assets",
+                    "recursive": 1,
+                    "order": 101
+                },
+                "ScanFolder ModularCharacterController/Registry": {
+                    "watch": "@GEMROOT:ModularCharacterController@/Registry",
+                    "recursive": 1,
+                    "order": 102
+                }
+            }
+        }
+    }
+}

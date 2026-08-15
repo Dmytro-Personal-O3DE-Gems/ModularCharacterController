@@ -1,0 +1,31 @@
+{
+    "gem_name": "ModularCharacterController",
+    "version": "1.0.0",
+    "display_name": "Modular Character Controller",
+    "license": "MIT",
+    "license_url": "",
+    "origin": "Dmytro Shyshkin",
+    "origin_url": "",
+    "type": "Code",
+    "summary": "",
+    "canonical_tags": [
+        "Gem"
+    ],
+    "user_tags": [
+        "ModularCharacterController"
+    ],
+    "platforms": [
+        "Linux","iOS","Android","Windows"
+    ],
+    "icon_path": "",
+    "requirements": "",
+    "documentation_url": "",
+    "dependencies": [
+        "StartingPointInput"
+    ],
+    "repo_uri": "",
+    "compatible_engines": [
+    ],
+    "engine_api_dependencies":[
+    ]
+}
