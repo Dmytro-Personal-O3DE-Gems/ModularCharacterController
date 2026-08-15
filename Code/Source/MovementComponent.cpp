@@ -45,6 +45,8 @@ namespace ModularCharacterController
         ApplyMovement(m_currentVelocity);
     }
 
+
+
     void MovementComponent::Reflect(AZ::ReflectContext* context)
     {
         if (auto serializeContext = azrtti_cast<AZ::SerializeContext*>(context))
@@ -91,6 +93,8 @@ namespace ModularCharacterController
         }
     }
 
+
+
     void MovementComponent::GetProvidedServices(AZ::ComponentDescriptor::DependencyArrayType& provided)
     {
         provided.push_back(AZ_CRC_CE("MovementComponentService"));
@@ -119,6 +123,8 @@ namespace ModularCharacterController
         OnHeld(value);
     }
 
+
+
     void MovementComponent::OnHeld(float value) {
         const auto* currentId = StartingPointInput::InputEventNotificationBus::GetCurrentBusId();
 
@@ -134,6 +140,8 @@ namespace ModularCharacterController
         if (*currentId == ForwardEventId || *currentId == BackEventId)    { m_moveForward = 0.0f; }
         else if (*currentId == LeftEventId || *currentId == RightEventId) { m_moveRight = 0.0f; }
     }
+
+
 
     // Calculate Move Direction methods
     AZ::Vector3 MovementComponent::CalculateLocalMoveDirection() const {
@@ -181,5 +189,5 @@ namespace ModularCharacterController
         );
     }
     // ~Calculate Move Direction methods
-    
+
 } // namespace ModularCharacterController
