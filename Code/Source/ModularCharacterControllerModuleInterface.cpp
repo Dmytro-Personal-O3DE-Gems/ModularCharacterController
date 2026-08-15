@@ -8,6 +8,7 @@
 
 #include "MovementComponent.h"
 #include "SprintComponent.h"
+#include "CrouchComponent.h"
 
 namespace ModularCharacterController
 {
@@ -26,6 +27,7 @@ namespace ModularCharacterController
             ModularCharacterControllerSystemComponent::CreateDescriptor(),
             MovementComponent::CreateDescriptor(),
             SprintComponent::CreateDescriptor(),
+            CrouchComponent::CreateDescriptor(),
             });
     }
 

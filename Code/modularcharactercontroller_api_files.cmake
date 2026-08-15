@@ -5,4 +5,5 @@ set(FILES
 
     Include/ModularCharacterController/MovementInterface.h
     Include/ModularCharacterController/SprintInterface.h
+    Include/ModularCharacterController/CrouchInterface.h
 )

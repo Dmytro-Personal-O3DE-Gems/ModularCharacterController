@@ -9,4 +9,6 @@ set(FILES
     Source/MovementComponent.cpp
     Source/SprintComponent.h
     Source/SprintComponent.cpp
+    Source/CrouchComponent.h
+    Source/CrouchComponent.cpp
 )
