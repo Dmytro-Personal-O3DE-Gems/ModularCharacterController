@@ -45,7 +45,7 @@ namespace ModularCharacterController
 
             if (AZ::EditContext *editContext = serializeContext->GetEditContext())
             {
-                editContext->Class<SprintComponent>("SprintComponent", "[Description of functionality provided by this component]")
+                editContext->Class<SprintComponent>("Sprint", "[Description of functionality provided by this component]")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::Category, "Character Controller/Abilities")
                     ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/Component_Placeholder.svg")
