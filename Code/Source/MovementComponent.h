@@ -10,6 +10,7 @@
 #include <StartingPointInput/InputEventNotificationBus.h>
 
 #include <AzFramework/Physics/CharacterBus.h>
+#include <PhysX/CharacterControllerBus.h>
 
 // Math
 #include <AzCore/Math/Vector3.h>          // AZ::Vector3
@@ -44,6 +45,8 @@ namespace ModularCharacterController
         void OnHeld(float value) override;
         void OnReleased([[maybe_unused]] float value) override;
 
+        void OnCharacterActivated([[maybe_unused]] const AZ::EntityId& entityId);
+
     private:
         // Input variables
         AZ::Vector3 m_currentVelocity = AZ::Vector3::CreateZero();
@@ -62,6 +65,10 @@ namespace ModularCharacterController
         bool isAccelerationEnabled = true;
         float m_fAcceleration = 10.0f;
         bool isAccelerationReadOnly() const { return !isAccelerationEnabled; }
+
+        // Capsule releated variables
+        float m_fCapsuleHeight;
+        float m_fCapsuleRadius;
 
         // Input methods
         AZ::Vector3 CalculateLocalMoveDirection() const;
