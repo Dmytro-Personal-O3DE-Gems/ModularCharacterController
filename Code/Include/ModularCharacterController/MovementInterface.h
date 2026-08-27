@@ -19,6 +19,15 @@ namespace ModularCharacterController
         
         virtual void SetSpeedMultiplier(float multiplier) = 0;
         virtual float GetForwardInput() const = 0;
+
+        // Capsule
+        virtual float GetStandingCapsuleHeight() const = 0;
+
+        virtual float GetCapsuleHeight() const = 0;
+        virtual float GetCapsuleRadius() const = 0;
+
+        virtual void SetCapsuleHeight(float height) = 0;
+        virtual void SetCapsuleRadius(float radius) = 0;
     };
 
     using MovementRequestBus = AZ::EBus<MovementRequests>;

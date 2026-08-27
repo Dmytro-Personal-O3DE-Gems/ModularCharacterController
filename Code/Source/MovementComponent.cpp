@@ -124,6 +124,18 @@ namespace ModularCharacterController
     void MovementComponent::GetDependentServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& dependent)
     {
     }
+    
+
+
+    void MovementComponent::OnCharacterActivated([[maybe_unused]] const AZ::EntityId& entityId) {
+        PhysX::CharacterControllerRequestBus::EventResult(
+            m_fStandingCapsuleHeight, GetEntityId(), &PhysX::CharacterControllerRequests::GetHeight);
+
+        PhysX::CharacterControllerRequestBus::EventResult(
+            m_fCapsuleRadius, GetEntityId(), &PhysX::CharacterControllerRequests::GetRadius);
+    }
+
+
 
     // Inputs Event methods
     void MovementComponent::OnPressed(float value) {
@@ -194,6 +206,30 @@ namespace ModularCharacterController
             &Physics::CharacterRequestBus::Events::AddVelocityForTick,
             worldVelocity
         );
+    }
+
+
+
+    // Interface methods
+    void MovementComponent::SetCapsuleHeight(float height)
+    {
+        PhysX::CharacterControllerRequestBus::Event(
+            GetEntityId(), &PhysX::CharacterControllerRequests::Resize, height);
+
+        m_fCurrentCapsuleHeight = height;
+
+        float actualHeight = 0.0f;
+        PhysX::CharacterControllerRequestBus::EventResult(
+            actualHeight, GetEntityId(), &PhysX::CharacterControllerRequests::GetHeight);
+        AZ_Printf("MovementComponent", "SetCapsuleHeight requested=%.3f actualAfterResize=%.3f", height, actualHeight);
+    }
+
+    void MovementComponent::SetCapsuleRadius(float radius)
+    {
+        PhysX::CharacterControllerRequestBus::Event(
+            GetEntityId(), &PhysX::CharacterControllerRequests::SetRadius, radius);
+
+        m_fCapsuleRadius = radius;
     }
     // ~Calculate Move Direction methods
 

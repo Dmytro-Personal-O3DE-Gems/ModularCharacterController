@@ -6,6 +6,8 @@
 
 #include <AzCore/Component/TickBus.h>
 
+#include <PhysX/CharacterControllerBus.h>
+
 // Input
 #include <StartingPointInput/InputEventNotificationBus.h>
 
@@ -41,6 +43,8 @@ namespace ModularCharacterController
         void Deactivate() override;
         virtual void OnTick(float deltaTime, [[maybe_unused]] AZ::ScriptTimePoint time);
 
+        void OnCharacterActivated([[maybe_unused]] const AZ::EntityId& entityId) override;
+
         void OnPressed(float value) override;
         void OnHeld(float value) override;
         void OnReleased([[maybe_unused]] float value) override;
@@ -56,19 +60,32 @@ namespace ModularCharacterController
 
         float m_fSpeedMultiplier = 1.0f; // Speed multiplier for the character's movement
 
+
+        float m_fStandingCapsuleHeight = 0.0f;
+        float m_fCurrentCapsuleHeight = 0.0f;
+        float m_fCapsuleRadius = 0.0f;
+
+
+
         // Backward speed multiplier for when the character is moving backward
         bool isBackwardSpeedMultiplierEnabled = true;
         float m_fBackwardSpeedMultiplier = 0.5f;
         bool isBackwardSpeedMultiplierReadOnly() const { return !isBackwardSpeedMultiplierEnabled; }
+
+
 
         // Acceleration for the character's movement
         bool isAccelerationEnabled = true;
         float m_fAcceleration = 10.0f;
         bool isAccelerationReadOnly() const { return !isAccelerationEnabled; }
 
+<<<<<<< Updated upstream
         // Capsule releated variables
         float m_fCapsuleHeight;
         float m_fCapsuleRadius;
+=======
+
+>>>>>>> Stashed changes
 
         // Input methods
         AZ::Vector3 CalculateLocalMoveDirection() const;
@@ -77,9 +94,21 @@ namespace ModularCharacterController
 
         void ApplyMovement(const AZ::Vector3 worldVelocity);
 
+
+
         // Interface methods
         void SetSpeedMultiplier(float multiplier) override { m_fSpeedMultiplier = multiplier; }
         float GetForwardInput() const override { return m_moveForward; }
+
+        float GetStandingCapsuleHeight() const override { return m_fStandingCapsuleHeight;  }
+
+        float GetCapsuleHeight() const override { return m_fCurrentCapsuleHeight; }
+        float GetCapsuleRadius() const override { return m_fCapsuleRadius; }
+
+        void SetCapsuleHeight(float height) override;
+        void SetCapsuleRadius(float radius) override;
+
+
 
         // Input events
         inline static const StartingPointInput::InputEventNotificationId ForwardEventId{ "Forward" };
