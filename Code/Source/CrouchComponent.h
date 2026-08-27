@@ -1,20 +1,7 @@
-<<<<<<< Updated upstream
-
-=======
-﻿
->>>>>>> Stashed changes
 #pragma once
 
 #include <AzCore/Component/Component.h>
 #include <ModularCharacterController/CrouchInterface.h>
-<<<<<<< Updated upstream
-
-// Cast
-#include <AzFramework/Physics/PhysicsSystem.h>             // AzPhysics::SystemInterface — GetSceneHandle / GetScene
-#include <AzFramework/Physics/PhysicsScene.h>               // AzPhysics::Scene — method QueryScene(request)
-#include <AzFramework/Physics/Common/PhysicsSceneQueries.h> // RayCastRequest / ShapeCastRequest / OverlapRequest / SceneQueryHits / *RequestHelpers
-#include <AzFramework/Physics/Collision/CollisionGroups.h>  // CollisionGroup
-=======
 #include <ModularCharacterController/MovementInterface.h>
 
 #include <StartingPointInput/InputEventNotificationBus.h>
@@ -27,19 +14,14 @@
 #include <AzFramework/Physics/PhysicsScene.h>
 #include <AzFramework/Physics/Common/PhysicsSceneQueries.h>
 #include <AzFramework/Physics/Collision/CollisionGroups.h>
->>>>>>> Stashed changes
 
 namespace ModularCharacterController
 {
     class CrouchComponent
         : public AZ::Component
-<<<<<<< Updated upstream
-        , public CrouchRequestBus::Handler
-=======
         , public AZ::TickBus::Handler
         , public CrouchRequestBus::Handler
         , public StartingPointInput::InputEventNotificationBus::MultiHandler
->>>>>>> Stashed changes
     {
     public:
         AZ_COMPONENT_DECL(CrouchComponent);
@@ -54,10 +36,6 @@ namespace ModularCharacterController
     protected:
         void Activate() override;
         void Deactivate() override;
-<<<<<<< Updated upstream
-    };
-} // namespace ModularCharacterController
-=======
 
         // Input
         void OnPressed([[maybe_unused]] float value) override;
@@ -79,11 +57,10 @@ namespace ModularCharacterController
         bool m_bWantsToStand = false;
 
         void EnterCrouch();
-        void TryStandUp();       // TODO: выставить m_bWantsToStand, подключить TickBus
+        void TryStandUp();
         bool CanStandUp() const;
 
         bool IsCrouching() const override { return m_bIsCrouching; }
-
 
         void RefreshCapsuleDimensions();
 
@@ -91,4 +68,3 @@ namespace ModularCharacterController
         inline static const StartingPointInput::InputEventNotificationId CrouchEventId{ "Crouch" };
     };
 } // namespace ModularCharacterController
->>>>>>> Stashed changes

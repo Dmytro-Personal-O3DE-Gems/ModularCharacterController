@@ -45,15 +45,6 @@ namespace ModularCharacterController
         ApplyMovement(m_currentVelocity);
     }
 
-    void MovementComponent::OnCharacterActivated([[maybe_unused]] const AZ::EntityId& entityId) {
-        PhysX::CharacterControllerRequestBus::EventResult(
-            m_fCapsuleHeight, GetEntityId(), &PhysX::CharacterControllerRequests::GetHeight);
-        PhysX::CharacterControllerRequestBus::EventResult(
-            m_fCapsuleRadius, GetEntityId(), &PhysX::CharacterControllerRequests::GetRadius);
-    }
-
-
-
     void MovementComponent::Reflect(AZ::ReflectContext* context)
     {
         if (auto serializeContext = azrtti_cast<AZ::SerializeContext*>(context))

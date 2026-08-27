@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <AzCore/Component/Component.h>
@@ -49,8 +48,6 @@ namespace ModularCharacterController
         void OnHeld(float value) override;
         void OnReleased([[maybe_unused]] float value) override;
 
-        void OnCharacterActivated([[maybe_unused]] const AZ::EntityId& entityId);
-
     private:
         // Input variables
         AZ::Vector3 m_currentVelocity = AZ::Vector3::CreateZero();
@@ -78,14 +75,6 @@ namespace ModularCharacterController
         bool isAccelerationEnabled = true;
         float m_fAcceleration = 10.0f;
         bool isAccelerationReadOnly() const { return !isAccelerationEnabled; }
-
-<<<<<<< Updated upstream
-        // Capsule releated variables
-        float m_fCapsuleHeight;
-        float m_fCapsuleRadius;
-=======
-
->>>>>>> Stashed changes
 
         // Input methods
         AZ::Vector3 CalculateLocalMoveDirection() const;
