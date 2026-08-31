@@ -18,6 +18,7 @@ namespace ModularCharacterController
 
     void CrouchComponent::Deactivate()
     {
+        AZ::TickBus::Handler::BusDisconnect();
         CrouchRequestBus::Handler::BusDisconnect();
         StartingPointInput::InputEventNotificationBus::MultiHandler::BusDisconnect();
     }
@@ -76,6 +77,8 @@ namespace ModularCharacterController
     {
     }
 
+
+
     void CrouchComponent::OnPressed([[maybe_unused]] float value)
     {
         if (m_bToggleMode)
@@ -84,15 +87,13 @@ namespace ModularCharacterController
         }
         else
         {
-            OnHeld(value);
+            EnterCrouch();
         }
         AZ_Printf("CrouchComponent", "OnPressed, toggle=%d, isCrouching=%d", m_bToggleMode, m_bIsCrouching);
     }
 
     void CrouchComponent::OnHeld([[maybe_unused]] float value)
     {
-        EnterCrouch();
-        AZ_Printf("CrouchComponent", "OnHeld, toggle=%d, isCrouching=%d", m_bToggleMode, m_bIsCrouching);
     }
 
     void CrouchComponent::OnReleased([[maybe_unused]] float value)
@@ -103,10 +104,14 @@ namespace ModularCharacterController
         AZ_Printf("CrouchComponent", "OnReleased, toggle=%d, isCrouching=%d", m_bToggleMode, m_bIsCrouching);
     }
 
+
+
     void CrouchComponent::OnTick([[maybe_unused]] float deltaTime, [[maybe_unused]] AZ::ScriptTimePoint time)
     {
         TryStandUp();
     }
+
+
 
     void CrouchComponent::EnterCrouch()
     {
@@ -121,6 +126,8 @@ namespace ModularCharacterController
         MovementRequestBus::Event(GetEntityId(), &MovementRequests::SetCapsuleHeight, m_fAppliedCrouchHeight);
 
         m_bIsCrouching = true;
+        m_bWantsToStand = false;
+        AZ::TickBus::Handler::BusDisconnect();
     }
 
     void CrouchComponent::TryStandUp()
