@@ -18,6 +18,8 @@ namespace ModularCharacterController
 
     void CrouchComponent::Deactivate()
     {
+        MovementRequestBus::Event(GetEntityId(), &MovementRequests::SetSpeedScale, SpeedChannels::Crouch, 1.0f);
+
         AZ::TickBus::Handler::BusDisconnect();
         CrouchRequestBus::Handler::BusDisconnect();
         StartingPointInput::InputEventNotificationBus::MultiHandler::BusDisconnect();
@@ -32,6 +34,7 @@ namespace ModularCharacterController
                 ->Field("CrouchHeight", &CrouchComponent::m_fCrouchHeight)
                 ->Field("StandUpSafetyMargin", &CrouchComponent::m_fStandUpSafetyMargin)
                 ->Field("ToggleMode", &CrouchComponent::m_bToggleMode)
+                ->Field("CrouchSpeedScale", &CrouchComponent::m_fCrouchSpeedScale)
                 ;
 
             if (AZ::EditContext* editContext = serializeContext->GetEditContext())
@@ -45,6 +48,7 @@ namespace ModularCharacterController
                     ->DataElement(AZ::Edit::UIHandlers::Default, &CrouchComponent::m_fCrouchHeight, "Crouch Height", "Configure crouch height.")
                     ->DataElement(AZ::Edit::UIHandlers::Default, &CrouchComponent::m_fStandUpSafetyMargin, "StandUp Safety Margin", "")
                     ->DataElement(AZ::Edit::UIHandlers::Default, &CrouchComponent::m_bToggleMode, "Toggle Mode", "Hold or press to crouch")
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &CrouchComponent::m_fCrouchSpeedScale, "Crouch Speed Scale", "Speed multiplier applied while crouched. 0.5 means half of walking speed.")
                     ;
             }
         }
@@ -94,6 +98,9 @@ namespace ModularCharacterController
 
     void CrouchComponent::OnHeld([[maybe_unused]] float value)
     {
+        // Intentionally empty. OnHeld fires every frame while the key is held, and both
+        // entering and leaving a crouch are one-shot transitions - they belong in
+        // OnPressed/OnReleased. Acting here would cancel any stand-up on the next frame.
     }
 
     void CrouchComponent::OnReleased([[maybe_unused]] float value)
@@ -124,6 +131,7 @@ namespace ModularCharacterController
         m_fAppliedCrouchHeight = AZStd::max(m_fCrouchHeight, minValidHeight);
 
         MovementRequestBus::Event(GetEntityId(), &MovementRequests::SetCapsuleHeight, m_fAppliedCrouchHeight);
+        MovementRequestBus::Event(GetEntityId(), &MovementRequests::SetSpeedScale, SpeedChannels::Crouch, m_fCrouchSpeedScale);
 
         m_bIsCrouching = true;
         m_bWantsToStand = false;
@@ -139,6 +147,7 @@ namespace ModularCharacterController
             return;
         }
 
+        MovementRequestBus::Event(GetEntityId(), &MovementRequests::SetSpeedScale, SpeedChannels::Crouch, 1.0f);
         MovementRequestBus::Event(GetEntityId(), &MovementRequests::SetCapsuleHeight, m_fInitialCapsuleHeight);
         m_bIsCrouching = false;
         m_bWantsToStand = false;

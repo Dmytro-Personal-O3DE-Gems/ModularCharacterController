@@ -5,6 +5,7 @@
 #include <ModularCharacterController/SprintInterface.h>
 
 #include <ModularCharacterController/MovementInterface.h>
+#include <ModularCharacterController/CrouchInterface.h>
 
 #include <AzCore/Component/TickBus.h>
 #include <StartingPointInput/InputEventNotificationBus.h>
@@ -43,6 +44,8 @@ namespace ModularCharacterController
 
     private:
         float m_sprintMultiplier = 2.0f;
+
+        bool m_bCanSprintWhileCrouching = false;
 
         bool m_canSprintBackwards = false;
         bool isSprintBackwardsReadOnly() const { return !m_canSprintBackwards; }

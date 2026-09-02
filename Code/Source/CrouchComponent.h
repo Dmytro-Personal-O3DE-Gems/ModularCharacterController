@@ -50,7 +50,8 @@ namespace ModularCharacterController
         float m_fInitialCapsuleRadius = 0.0f;
 
         float m_fCrouchHeight = 1.0f;
-        float m_fStandUpSafetyMargin = 0.05f;
+        float m_fStandUpSafetyMargin = 0.1f;
+        float m_fCrouchSpeedScale = 0.5f;
         bool m_bToggleMode = true;
 
         bool m_bIsCrouching = false;

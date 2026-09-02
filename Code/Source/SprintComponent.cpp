@@ -18,6 +18,8 @@ namespace ModularCharacterController
 
     void SprintComponent::Deactivate()
     {
+        MovementRequestBus::Event(GetEntityId(), &MovementRequests::SetSpeedScale, SpeedChannels::Sprint, 1.0f);
+
         SprintRequestBus::Handler::BusDisconnect(GetEntityId());
         AZ::TickBus::Handler::BusDisconnect();
         StartingPointInput::InputEventNotificationBus::MultiHandler::BusDisconnect();
@@ -27,11 +29,16 @@ namespace ModularCharacterController
     {
         float forwardInput = 0.0f;
         MovementRequestBus::EventResult(forwardInput, GetEntityId(), &MovementRequests::GetForwardInput);
+        bool isCrouching = false;
+        CrouchRequestBus::EventResult(isCrouching, GetEntityId(), &CrouchRequests::IsCrouching);
 
         const bool blockedByBackward = (!m_canSprintBackwards && forwardInput < 0.0f);
-        const float multiplier = blockedByBackward ? 1.0f : m_sprintMultiplier;
+        const bool blockedByCrouch = (!m_bCanSprintWhileCrouching && isCrouching);
 
-        MovementRequestBus::Event(GetEntityId(), &MovementRequests::SetSpeedMultiplier, multiplier);
+        const float scale = (blockedByBackward || blockedByCrouch) ? 1.0f : m_sprintMultiplier;
+
+        MovementRequestBus::Event(
+            GetEntityId(), &MovementRequests::SetSpeedScale, SpeedChannels::Sprint, scale);
     }
 
     void SprintComponent::Reflect(AZ::ReflectContext *context)
@@ -41,7 +48,9 @@ namespace ModularCharacterController
             serializeContext->Class<SprintComponent, AZ::Component>()
                 ->Version(1)
                 ->Field("SprintMultiplier", &SprintComponent::m_sprintMultiplier)
-                ->Field("CanSprintBackwards", &SprintComponent::m_canSprintBackwards);
+                ->Field("CanSprintBackwards", &SprintComponent::m_canSprintBackwards)
+                ->Field("CanSprintWhileCrouching", &SprintComponent::m_bCanSprintWhileCrouching)
+                ;
 
             if (AZ::EditContext *editContext = serializeContext->GetEditContext())
             {
@@ -52,7 +61,9 @@ namespace ModularCharacterController
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
 
                     ->DataElement(AZ::Edit::UIHandlers::Default, &SprintComponent::m_sprintMultiplier, "Sprint Multiplier", "The multiplier applied to the character's movement speed while sprinting.")
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &SprintComponent::m_canSprintBackwards, "Can Sprint Backwards", "Whether the character can sprint while moving backwards.");
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &SprintComponent::m_canSprintBackwards, "Can Sprint Backwards", "Whether the character can sprint while moving backwards.")
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &SprintComponent::m_bCanSprintWhileCrouching, "Can Sprint While Crouching", "Allow sprinting while crouched. Off - the sprint key has no effect while " "crouched. On - the multipliers compose (crouch x sprint).")
+                    ;
             }
         }
 
@@ -100,6 +111,6 @@ namespace ModularCharacterController
     void SprintComponent::OnReleased([[maybe_unused]] float value)
     {
         AZ::TickBus::Handler::BusDisconnect();
-        MovementRequestBus::Event(GetEntityId(), &MovementRequests::SetSpeedMultiplier, 1.0f);
+        MovementRequestBus::Event(GetEntityId(), &MovementRequests::SetSpeedScale, SpeedChannels::Sprint, 1.0f);
     }
 } // namespace ModularCharacterController

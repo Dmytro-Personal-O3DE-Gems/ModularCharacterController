@@ -24,6 +24,8 @@ namespace ModularCharacterController
             StartingPointInput::InputEventNotificationId("Left"));
         StartingPointInput::InputEventNotificationBus::MultiHandler::BusConnect(
             StartingPointInput::InputEventNotificationId("Right"));
+        StartingPointInput::InputEventNotificationBus::MultiHandler::BusConnect(
+            StartingPointInput::InputEventNotificationId("Jump"));
     }
 
     void MovementComponent::Deactivate()
@@ -166,7 +168,7 @@ namespace ModularCharacterController
         AZ::Vector3 localMoveDirection = CalculateLocalMoveDirection();
         AZ::Transform worldTransform = AZ::Transform::CreateIdentity();
 
-        const float effectiveWalkSpeed = m_fWalkSpeed * m_fSpeedMultiplier;
+        const float effectiveWalkSpeed = m_fWalkSpeed * GetTotalSpeedScale();
 
         float forwardSpeed = effectiveWalkSpeed;
         if (isBackwardSpeedMultiplierEnabled && localMoveDirection.GetY() < 0.0f)
@@ -202,6 +204,66 @@ namespace ModularCharacterController
 
 
     // Interface methods
+    void MovementComponent::SetSpeedScale(AZ::Crc32 channel, float scale)
+    {
+        if (scale < 0.0f)
+        {
+            AZ_Warning("MovementComponent", false,
+                    "SetSpeedScale: negative scale %.3f on channel 0x%08X was clamped to 0. "
+                    "A negative multiplier would reverse the movement direction.",
+                scale, static_cast<AZ::u32>(channel));
+            scale = 0.0f;
+        }
+
+        // Channel already registered - just update its contribution
+        for (SpeedChannelEntry& entry : m_speedChannels)
+        {
+            if (entry.m_channel == channel)
+            {
+                entry.m_scale = scale;
+                return;
+            }
+        }
+
+        if (scale == 1.0f)
+        {
+            return;
+        }
+
+        if (m_speedChannels.size() == m_speedChannels.capacity())
+        {
+            AZ_Warning("MovementComponent", false,
+                "SetSpeedScale: channel limit reached (%zu), channel 0x%08X ignored.",
+                m_speedChannels.capacity(), static_cast<AZ::u32>(channel));
+            return;
+        }
+
+        m_speedChannels.push_back(SpeedChannelEntry{ channel, scale });
+    }
+
+    float MovementComponent::GetSpeedScale(AZ::Crc32 channel) const
+    {
+        for (const SpeedChannelEntry& entry : m_speedChannels)
+        {
+            if (entry.m_channel == channel)
+            {
+                return entry.m_scale;
+            }
+        }
+        return 1.0f; // channel was never registered, so it contributes nothin
+    }
+
+    float MovementComponent::GetTotalSpeedScale() const
+    {
+        float total = 1.0f;
+        for (const SpeedChannelEntry& entry : m_speedChannels)
+        {
+            total *= entry.m_scale;
+        }
+        return total;
+    }
+
+
     void MovementComponent::SetCapsuleHeight(float height)
     {
         PhysX::CharacterControllerRequestBus::Event(

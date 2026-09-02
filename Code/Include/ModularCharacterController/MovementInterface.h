@@ -2,22 +2,30 @@
 #pragma once
 
 #include <AzCore/Component/ComponentBus.h>
+#include <AzCore/Math/Crc.h>
 
 namespace ModularCharacterController
 {
+    namespace SpeedChannels
+    {
+        inline constexpr AZ::Crc32 Crouch{ "Crouch" };
+        inline constexpr AZ::Crc32 Sprint{ "Sprint" };
+        inline constexpr AZ::Crc32 Jump{ "Jump" };
+    }
+
+
+
     class MovementRequests
         : public AZ::ComponentBus
     {
     public:
         AZ_RTTI(ModularCharacterController::MovementRequests, "{69B9E721-3195-4CC4-AC07-DC1160203BFF}");
-
-        // Put your public request methods here.
         
-        // Put notification events here. Examples:
-        // void RegisterEvent(AZ::EventHandler<...> notifyHandler);
-        // AZ::Event<...> m_notifyEvent1;
+        //virtual void SetSpeedMultiplier(float multiplier) = 0;
+        virtual void  SetSpeedScale(AZ::Crc32 channel, float scale) = 0;
+        virtual float GetSpeedScale(AZ::Crc32 channel) const = 0;
+        virtual float GetTotalSpeedScale() const = 0;
         
-        virtual void SetSpeedMultiplier(float multiplier) = 0;
         virtual float GetForwardInput() const = 0;
 
         // Capsule

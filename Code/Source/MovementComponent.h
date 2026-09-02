@@ -18,6 +18,9 @@
 #include <AzCore/Math/Transform.h>        // AZ::Transform
 #include <AzCore/Component/TransformBus.h> // AZ::TransformBus
 
+#include <AzCore/Math/Crc.h>
+#include <AzCore/std/containers/fixed_vector.h>
+
 namespace ModularCharacterController
 {
     class MovementComponent
@@ -55,7 +58,23 @@ namespace ModularCharacterController
         float m_moveRight = 0.0f;
         float m_fWalkSpeed = 3.5f;
 
-        float m_fSpeedMultiplier = 1.0f; // Speed multiplier for the character's movement
+   
+        // Per-channel speed multipliers
+        struct SpeedChannelEntry
+        {
+            AZ::Crc32 m_channel;
+            float     m_scale = 1.0f;
+        };
+
+        // A flat list rather than an unordered_map: with 2-5 entries a linear scan over
+        // contiguous memory beats a hash lookup, and nothing allocates during a frame.
+        static constexpr size_t MaxSpeedChannels = 8;
+        AZStd::fixed_vector<SpeedChannelEntry, MaxSpeedChannels> m_speedChannels;
+
+        void  SetSpeedScale(AZ::Crc32 channel, float scale) override;
+        float GetSpeedScale(AZ::Crc32 channel) const override;
+        float GetTotalSpeedScale() const override;
+
 
 
         float m_fStandingCapsuleHeight = 0.0f;
@@ -86,7 +105,6 @@ namespace ModularCharacterController
 
 
         // Interface methods
-        void SetSpeedMultiplier(float multiplier) override { m_fSpeedMultiplier = multiplier; }
         float GetForwardInput() const override { return m_moveForward; }
 
         float GetStandingCapsuleHeight() const override { return m_fStandingCapsuleHeight;  }
