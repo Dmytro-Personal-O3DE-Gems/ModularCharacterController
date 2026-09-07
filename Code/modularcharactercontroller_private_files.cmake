@@ -11,4 +11,6 @@ set(FILES
     Source/SprintComponent.cpp
     Source/CrouchComponent.h
     Source/CrouchComponent.cpp
+    Source/JumpComponent.h
+    Source/JumpComponent.cpp
 )

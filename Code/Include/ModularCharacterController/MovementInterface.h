@@ -36,6 +36,9 @@ namespace ModularCharacterController
 
         virtual void SetCapsuleHeight(float height) = 0;
         virtual void SetCapsuleRadius(float radius) = 0;
+
+        // PhysX
+        virtual bool IsGrounded() = 0;
     };
 
     using MovementRequestBus = AZ::EBus<MovementRequests>;

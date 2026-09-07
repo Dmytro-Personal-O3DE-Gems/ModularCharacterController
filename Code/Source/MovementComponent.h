@@ -5,7 +5,7 @@
 
 #include <AzCore/Component/TickBus.h>
 
-#include <PhysX/CharacterControllerBus.h>
+#include <PhysX/CharacterGameplayBus.h>
 
 // Input
 #include <StartingPointInput/InputEventNotificationBus.h>
@@ -14,9 +14,9 @@
 #include <PhysX/CharacterControllerBus.h>
 
 // Math
-#include <AzCore/Math/Vector3.h>          // AZ::Vector3
-#include <AzCore/Math/Transform.h>        // AZ::Transform
-#include <AzCore/Component/TransformBus.h> // AZ::TransformBus
+#include <AzCore/Math/Vector3.h>            // AZ::Vector3
+#include <AzCore/Math/Transform.h>          // AZ::Transform
+#include <AzCore/Component/TransformBus.h>  // AZ::TransformBus
 
 #include <AzCore/Math/Crc.h>
 #include <AzCore/std/containers/fixed_vector.h>
@@ -115,7 +115,7 @@ namespace ModularCharacterController
         void SetCapsuleHeight(float height) override;
         void SetCapsuleRadius(float radius) override;
 
-
+        bool IsGrounded() override;
 
         // Input events
         inline static const StartingPointInput::InputEventNotificationId ForwardEventId{ "Forward" };

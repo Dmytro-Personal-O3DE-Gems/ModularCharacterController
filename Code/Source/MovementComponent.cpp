@@ -284,6 +284,15 @@ namespace ModularCharacterController
 
         m_fCapsuleRadius = radius;
     }
+    bool MovementComponent::IsGrounded()
+    {
+        bool isOnGround = false;
+
+        PhysX::CharacterGameplayRequestBus::EventResult(isOnGround, GetEntityId(),
+            &PhysX::CharacterGameplayRequests::IsOnGround);
+
+        return isOnGround;
+    }
     // ~Calculate Move Direction methods
 
 } // namespace ModularCharacterController
