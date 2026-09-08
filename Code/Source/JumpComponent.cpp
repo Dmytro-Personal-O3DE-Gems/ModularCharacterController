@@ -141,8 +141,43 @@ namespace ModularCharacterController
 
     bool JumpComponent::ResolveCrouch()
     {
-        return false;
-    }
+        bool isCrouching = false;
+        CrouchRequestBus::EventResult(isCrouching, GetEntityId(), &CrouchRequests::IsCrouching);
+
+        // The crouch-jump modes only describe behaviour while crouched. A standing character -
+        // or one on an entity with no CrouchComponent, where the call above leaves isCrouching
+        // untouched - is never restricted by them.
+        if (!isCrouching)
+        {
+            return true;
+        }
+
+        switch (m_eCrouchJumpMode)
+        {
+        case CrouchJumpMode::Forbid:
+            return false;
+
+        case CrouchJumpMode::JumpCrouched:
+            return true;
+
+        case CrouchJumpMode::StandUpThenJump:
+        {
+            // TryStandUpOnce is a command, not a query: it stands the character up when there
+            // is headroom and reports whether it did. One call covers both the check and the
+            // transition, so no separate CanStandUp call is needed here.
+            bool stoodUp = false;
+            CrouchRequestBus::EventResult(stoodUp, GetEntityId(), &CrouchRequests::TryStandUpOnce);
+
+            // Blocked by a ceiling means the mode's precondition was not met, so the jump is
+            // refused. Return true instead to fall back to a crouched jump.
+            return stoodUp;
+        }
+        }
+
+        // Every enumerator is handled above and there is deliberately no default label, so adding
+        // a new mode surfaces as a compiler warning rather than silently landing here.
+        return true;
+    }    
 
     void JumpComponent::DoJump()
     {

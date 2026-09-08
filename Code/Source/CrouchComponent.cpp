@@ -87,7 +87,7 @@ namespace ModularCharacterController
     {
         if (m_bToggleMode)
         {
-            m_bIsCrouching ? TryStandUp() : EnterCrouch();
+            m_bIsCrouching ? RequestStandUp() : EnterCrouch();
         }
         else
         {
@@ -107,7 +107,7 @@ namespace ModularCharacterController
     {
         if (m_bToggleMode) return;
 
-        TryStandUp();
+        RequestStandUp();
         AZ_Printf("CrouchComponent", "OnReleased, toggle=%d, isCrouching=%d", m_bToggleMode, m_bIsCrouching);
     }
 
@@ -115,7 +115,10 @@ namespace ModularCharacterController
 
     void CrouchComponent::OnTick([[maybe_unused]] float deltaTime, [[maybe_unused]] AZ::ScriptTimePoint time)
     {
-        TryStandUp();
+        if (TryStandUpOnce())
+        {
+            AZ::TickBus::Handler::BusDisconnect();
+        }
     }
 
 
@@ -134,24 +137,25 @@ namespace ModularCharacterController
         MovementRequestBus::Event(GetEntityId(), &MovementRequests::SetSpeedScale, SpeedChannels::Crouch, m_fCrouchSpeedScale);
 
         m_bIsCrouching = true;
-        m_bWantsToStand = false;
         AZ::TickBus::Handler::BusDisconnect();
     }
 
-    void CrouchComponent::TryStandUp()
+    bool CrouchComponent::TryStandUpOnce()
     {
-        if (!CanStandUp())
-        {
-            AZ::TickBus::Handler::BusConnect();
-            m_bWantsToStand = true;
-            return;
-        }
+        if (!m_bIsCrouching) { return true; }   // already standing, nothing to do
+        if (!CanStandUp()) { return false; }    // blocked - change nothing
 
         MovementRequestBus::Event(GetEntityId(), &MovementRequests::SetSpeedScale, SpeedChannels::Crouch, 1.0f);
         MovementRequestBus::Event(GetEntityId(), &MovementRequests::SetCapsuleHeight, m_fInitialCapsuleHeight);
         m_bIsCrouching = false;
-        m_bWantsToStand = false;
-        AZ::TickBus::Handler::BusDisconnect();
+
+        return true;
+    }
+
+    void CrouchComponent::RequestStandUp()
+    {
+        if(!TryStandUpOnce())
+            AZ::TickBus::Handler::BusConnect();
     }
 
     bool CrouchComponent::CanStandUp() const

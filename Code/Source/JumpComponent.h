@@ -4,6 +4,7 @@
 #include <AzCore/Component/Component.h>
 #include <ModularCharacterController/JumpInterface.h>
 #include <ModularCharacterController/MovementInterface.h>
+#include <ModularCharacterController/CrouchInterface.h>
 
 #include <AzCore/Component/TickBus.h>
 

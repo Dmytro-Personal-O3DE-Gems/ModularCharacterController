@@ -44,6 +44,8 @@ namespace ModularCharacterController
 
         void OnTick(float deltaTime, AZ::ScriptTimePoint time) override;
 
+        bool TryStandUpOnce() override;
+
     private:
         float m_fInitialCapsuleHeight = 0.0f;
         float m_fAppliedCrouchHeight = 0.0f;
@@ -59,6 +61,7 @@ namespace ModularCharacterController
 
         void EnterCrouch();
         void TryStandUp();
+        void RequestStandUp();
         bool CanStandUp() const;
 
         bool IsCrouching() const override { return m_bIsCrouching; }
