@@ -14,9 +14,11 @@
 #include <AzCore/Math/Vector3.h>          // AZ::Vector3
 
 // Physics
-#include <AzFramework/Physics/PhysicsSystem.h>   // AzPhysics::SceneInterface
-#include <AzFramework/Physics/PhysicsScene.h>    // AzPhysics::SceneEvents
-#include <AzFramework/Physics/SystemBus.h>    // Physics::DefaultWorldBus
+#include <AzFramework/Physics/PhysicsSystem.h>  // AzPhysics::SceneInterface
+#include <AzFramework/Physics/PhysicsScene.h>   // AzPhysics::SceneEvents
+#include <AzFramework/Physics/SystemBus.h>      // Physics::DefaultWorldBus
+#include <AzFramework/Physics/Character.h>      // Physics::AddVelocityForTick
+#include <PhysX/CharacterGameplayBus.h>
 
 namespace ModularCharacterController
 {
@@ -59,7 +61,7 @@ namespace ModularCharacterController
 
     private:
         // Settings
-        float m_fJumpSpeed = 5.0f;
+        float m_fJumpSpeed = 2.5f;
         AZ::Vector3 m_gravity = AZ::Vector3::CreateZero();
         CrouchJumpMode m_eCrouchJumpMode = CrouchJumpMode::StandUpThenJump;
 

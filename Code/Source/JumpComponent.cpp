@@ -48,6 +48,8 @@ namespace ModularCharacterController
         JumpRequestBus::Handler::BusConnect(GetEntityId());
         AZ::TickBus::Handler::BusConnect();
 
+        StartingPointInput::InputEventNotificationBus::MultiHandler::BusConnect(JumpEventId);
+
         SetupSceneGravity();
     }
 
@@ -55,6 +57,8 @@ namespace ModularCharacterController
     {
         JumpRequestBus::Handler::BusDisconnect(GetEntityId());
         AZ::TickBus::Handler::BusDisconnect();
+
+        StartingPointInput::InputEventNotificationBus::MultiHandler::BusDisconnect();
 
         m_onGravityChangedHandler.Disconnect();
     }
@@ -86,6 +90,11 @@ namespace ModularCharacterController
 
     void JumpComponent::OnPressed([[maybe_unused]] float value)
     {
+        Physics::CharacterRequestBus::Event(
+            GetEntityId(), &Physics::CharacterRequests::AddVelocityForTick, AZ::Vector3(0.0f, 0.0f, m_fJumpSpeed));
+
+        PhysX::CharacterGameplayRequestBus::Event(
+            GetEntityId(), &PhysX::CharacterGameplayRequests::SetFallingVelocity, AZ::Vector3(0.0f, 0.0f, m_fJumpSpeed));
     }
 
     void JumpComponent::OnHeld([[maybe_unused]] float value)
@@ -104,11 +113,18 @@ namespace ModularCharacterController
         MovementRequestBus::EventResult(isGrounded, GetEntityId(), &MovementRequests::IsGrounded);
 
         AZ_Printf("JumpComponent", "IsGrounded = %s", isGrounded ? "true" : "false");
+
+        AZ::Vector3 velocityZ = AZ::Vector3::CreateZero();
+
+        PhysX::CharacterGameplayRequestBus::EventResult(velocityZ, GetEntityId(), &PhysX::CharacterGameplayRequests::GetFallingVelocity);
+
+        AZ_Printf("JumpComponent", "FallingVelocity = %.3f", velocityZ.GetZ());
+
     }
 
     int JumpComponent::GetTickOrder()
     {
-        return 0;
+        return AZ::ComponentTickBus::TICK_GAME;
     }
 
     bool JumpComponent::IsAirborne() const
