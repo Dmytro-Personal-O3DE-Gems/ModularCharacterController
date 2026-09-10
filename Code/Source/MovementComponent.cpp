@@ -126,6 +126,10 @@ namespace ModularCharacterController
 
         PhysX::CharacterControllerRequestBus::EventResult(
             m_fCapsuleRadius, GetEntityId(), &PhysX::CharacterControllerRequests::GetRadius);
+
+        // Nobody has resized the capsule yet, so the character starts at full height. Without
+        // this, GetCapsuleHeight reports zero until the first crouch.
+        m_fCurrentCapsuleHeight = m_fStandingCapsuleHeight;
     }
 
 

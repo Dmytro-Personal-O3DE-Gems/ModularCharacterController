@@ -19,6 +19,13 @@
 #include <AzFramework/Physics/PhysicsScene.h>   // AzPhysics::SceneEvents
 #include <AzFramework/Physics/SystemBus.h>      // Physics::DefaultWorldBus
 #include <AzFramework/Physics/Character.h>      // Physics::AddVelocityForTick
+
+// Cast
+#include <AzFramework/Physics/PhysicsSystem.h>              // AzPhysics::SystemInterface — GetSceneHandle / GetScene
+#include <AzFramework/Physics/PhysicsScene.h>               // AzPhysics::Scene — сам метод QueryScene(request)
+#include <AzFramework/Physics/Common/PhysicsSceneQueries.h> // RayCastRequest / ShapeCastRequest / OverlapRequest / SceneQueryHits / *RequestHelpers
+#include <AzFramework/Physics/Collision/CollisionGroups.h>  // CollisionGroup
+
 #include <PhysX/CharacterGameplayBus.h>
 
 namespace ModularCharacterController
@@ -58,33 +65,49 @@ namespace ModularCharacterController
         void OnTick(float deltaTime, AZ::ScriptTimePoint time) override;
         int  GetTickOrder() override;
 
-        bool IsAirborne() const override;
-
     private:
         // Settings
         float m_fJumpSpeed = 2.5f;
         AZ::Vector3 m_gravity = AZ::Vector3::CreateZero();
         CrouchJumpMode m_eCrouchJumpMode = CrouchJumpMode::StandUpThenJump;
 
-        bool  m_bVariableHeight = false;
+        bool  m_bVariableHeightEnabled = false;
         float m_fJumpCutFactor = 0.4f;
-        bool  isJumpCutReadOnly() const { return !m_bVariableHeight; }
+        bool  isJumpCutReadOnly() const { return !m_bVariableHeightEnabled; }
 
         bool  m_bCoyoteTimeEnabled = false;
         float m_fCoyoteTime = 0.12f;
         bool  isCoyoteTimeReadOnly() const { return !m_bCoyoteTimeEnabled; }
 
-        float m_fHeadHitCheckDistance = 0.20f;
+
+
+        // Shortest ceiling stall a player can notice, in seconds. Multiplied by scene gravity it
+        // gives the speed below which a head hit is not worth detecting.
+        float m_fHeadHitMinStallTime = 0.1f;
+
+        // How much of the requested climb must survive before we call it a hit.
+        float m_fHeadHitStallRatio = 0.5f;
+        
+
 
         // State
-        float m_fVerticalVelocity = 0.0f;
+        bool m_bIsJumped = false;
+        bool m_bIsGrounded = false;
         float m_fTimeSinceGrounded = 0.0f;
-        float m_fSavedGravityMultiplier = 1.0f;
+        // A press older than this window is treated as absent. The field starts at the sentinel
+        // and returns to it once a press has been spent.
+        static constexpr float NoBufferedJump = 1000.0f;
 
-        bool CanJumpNow() const;      // TODO: земля, либо coyote-окно
-        bool ResolveCrouch();         // TODO: три режима; вернуть, разрешён ли прыжок
-        void DoJump();                // TODO: одна строка — задать m_fVerticalVelocity
-        bool CheckHeadHit() const;    // геометрия из CanStandUp, только вверх и на m_fHeadHitCheckDistance
+        float m_fJumpBufferTime = 0.12f;
+        float m_fTimeSinceJumpPressed = NoBufferedJump;
+
+        bool CanJumpNow() const;
+        bool ResolveCrouch();
+        void DoJump();
+        bool CheckHeadHit() const;
+
+        float m_fCapsuleHeight = 0.0f;
+        float m_fCapsuleRadius = 0.0f;
 
         inline static const StartingPointInput::InputEventNotificationId JumpEventId{ "Jump" };
 
