@@ -174,6 +174,27 @@ namespace ModularCharacterController
 
     void JumpComponent::OnReleased([[maybe_unused]] float value)
     {
+        if (!m_bVariableHeightEnabled)
+        {
+            return;
+        }
+
+        AZ::Vector3 fallingVelocity = AZ::Vector3::CreateZero();
+        PhysX::CharacterGameplayRequestBus::EventResult(
+            fallingVelocity, GetEntityId(), &PhysX::CharacterGameplayRequests::GetFallingVelocity);
+
+        // Only a climb can be cut short. Scaling a negative value would slow the fall instead,
+        // so every mid-air key release would turn into a short glide.
+        if (fallingVelocity.GetZ() <= 0.0f)
+        {
+            return;
+        }
+
+        // Keep X and Y untouched - the cut is about how much of the climb survives, nothing else.
+        fallingVelocity.SetZ(fallingVelocity.GetZ() * m_fJumpCutFactor);
+
+        PhysX::CharacterGameplayRequestBus::Event(
+            GetEntityId(), &PhysX::CharacterGameplayRequests::SetFallingVelocity, fallingVelocity);
     }
 
 

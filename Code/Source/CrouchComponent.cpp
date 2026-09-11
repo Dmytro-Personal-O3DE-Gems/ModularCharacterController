@@ -39,7 +39,7 @@ namespace ModularCharacterController
 
             if (AZ::EditContext* editContext = serializeContext->GetEditContext())
             {
-                editContext->Class<CrouchComponent>("CrouchComponent", "[Description of functionality provided by this component]")
+                editContext->Class<CrouchComponent>("Crouch", "[Description of functionality provided by this component]")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
                     ->Attribute(AZ::Edit::Attributes::Category, "ModularCharacterController")
                     ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/Component_Placeholder.svg")
