@@ -39,14 +39,22 @@ namespace ModularCharacterController
 
             if (AZ::EditContext* editContext = serializeContext->GetEditContext())
             {
-                editContext->Class<CrouchComponent>("Crouch", "[Description of functionality provided by this component]")
+                editContext->Class<CrouchComponent>("Crouch",
+                    "Shrinks the character capsule and slows movement while crouched. Standing up is "
+                    "refused while there is no headroom and retried every frame until there is, so the "
+                    "character stands as soon as it leaves a low space. Note that resizing the capsule "
+                    "keeps the feet in place and does not move the entity transform - a child camera "
+                    "has to be offset separately. Requires Character Movement on the same entity.")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                    ->Attribute(AZ::Edit::Attributes::Category, "ModularCharacterController")
+                    ->Attribute(AZ::Edit::Attributes::Category, "Modular Character Controller/Abilities")
                     ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/Component_Placeholder.svg")
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
 
                     ->DataElement(AZ::Edit::UIHandlers::Default, &CrouchComponent::m_fCrouchHeight, "Crouch Height", "Configure crouch height.")
-                    ->DataElement(AZ::Edit::UIHandlers::Default, &CrouchComponent::m_fStandUpSafetyMargin, "StandUp Safety Margin", "")
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &CrouchComponent::m_fStandUpSafetyMargin, "StandUp Safety Margin",
+                        "Extra clearance required above the standing capsule before standing up is "
+                        "allowed, in metres. Without it the character can stand into a ceiling that "
+                        "is exactly its own height and be pushed out by PhysX.")
                     ->DataElement(AZ::Edit::UIHandlers::Default, &CrouchComponent::m_bToggleMode, "Toggle Mode", "Hold or press to crouch")
                     ->DataElement(AZ::Edit::UIHandlers::Default, &CrouchComponent::m_fCrouchSpeedScale, "Crouch Speed Scale", "Speed multiplier applied while crouched. 0.5 means half of walking speed.")
                     ;

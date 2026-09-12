@@ -63,9 +63,14 @@ namespace ModularCharacterController
 
             if (AZ::EditContext* editContext = serializeContext->GetEditContext())
             {
-                editContext->Class<MovementComponent>("Character Controller/Core", "[Description of functionality provided by this component]")
+                editContext->Class<MovementComponent>("Character Movement (Core)",
+                    "Core of the character controller. Reads the movement keys, accelerates and brakes, "
+                    "and applies the resulting velocity to the PhysX capsule. Also owns the capsule "
+                    "dimensions and the per-channel speed multipliers that Sprint and Crouch write into, "
+                    "and answers whether the character is standing on the ground. Every other component "
+                    "in this gem requires it on the same entity.")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                    ->Attribute(AZ::Edit::Attributes::Category, "Character Controller/Core")
+                    ->Attribute(AZ::Edit::Attributes::Category, "Modular Character Controller/Core")
                     ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/Component_Placeholder.svg")
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
 

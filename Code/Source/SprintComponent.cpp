@@ -54,9 +54,13 @@ namespace ModularCharacterController
 
             if (AZ::EditContext *editContext = serializeContext->GetEditContext())
             {
-                editContext->Class<SprintComponent>("Sprint", "[Description of functionality provided by this component]")
+                editContext->Class<SprintComponent>("Sprint",
+                    "Multiplies walking speed while the sprint key is held. Works through the Movement "
+                    "component's speed channels, so it composes with Crouch instead of overriding it - "
+                    "a crouching sprinter gets both multipliers. Requires Character Movement on the "
+                    "same entity.")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                    ->Attribute(AZ::Edit::Attributes::Category, "Character Controller/Abilities")
+                    ->Attribute(AZ::Edit::Attributes::Category, "Modular Character Controller/Abilities")
                     ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/Component_Placeholder.svg")
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
 
