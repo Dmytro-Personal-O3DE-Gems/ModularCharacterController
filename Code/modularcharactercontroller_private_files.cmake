@@ -13,4 +13,6 @@ set(FILES
     Source/CrouchComponent.cpp
     Source/JumpComponent.h
     Source/JumpComponent.cpp
+    Source/FirstPersonCameraComponent.h
+    Source/FirstPersonCameraComponent.cpp
 )
