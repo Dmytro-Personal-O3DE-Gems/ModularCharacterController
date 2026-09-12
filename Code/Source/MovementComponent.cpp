@@ -39,9 +39,20 @@ namespace ModularCharacterController
     void MovementComponent::OnTick(float deltaTime, [[maybe_unused]] AZ::ScriptTimePoint time)
     {
         const AZ::Vector3 targetVelocity = CalculateWorldMoveDirection();
-        
-        m_currentVelocity = 
-            isAccelerationEnabled ? CalculateAcceleration(deltaTime, targetVelocity) :
+
+        // Asked once per tick on purpose: IsGrounded runs a fresh overlap query on every call.
+        const bool isGrounded = IsGrounded();
+
+        // Air control scales how fast the current velocity is allowed to chase the target while
+        // the character is off the ground. A factor of 1 behaves exactly like the ground, 0
+        // leaves the take-off velocity untouched, and the values in between let the player nudge
+        // the trajectory without reversing it.
+        const float accelerationRate = isGrounded
+            ? m_fAcceleration
+            : m_fAcceleration * m_fAirControlFactor;
+
+        m_currentVelocity =
+            isAccelerationEnabled ? CalculateAcceleration(deltaTime, targetVelocity, accelerationRate) :
                                     targetVelocity;
 
         ApplyMovement(m_currentVelocity);
@@ -58,6 +69,7 @@ namespace ModularCharacterController
                 ->Field("BackwardSpeedMultiplier", &MovementComponent::m_fBackwardSpeedMultiplier)
                 ->Field("EnableAcceleration", &MovementComponent::isAccelerationEnabled)
                 ->Field("EnableBackwardSpeedMultiplier", &MovementComponent::isBackwardSpeedMultiplierEnabled)
+                ->Field("AirControlFactor", &MovementComponent::m_fAirControlFactor)
 
                 ;
 
@@ -80,6 +92,15 @@ namespace ModularCharacterController
                     ->DataElement(AZ::Edit::UIHandlers::Default, &MovementComponent::isAccelerationEnabled, "Enable Acceleration", "Enable or disable acceleration for the character's movement.")
                         ->Attribute(AZ::Edit::Attributes::ChangeNotify, AZ::Edit::PropertyRefreshLevels::AttributesAndValues)
                     ->DataElement(AZ::Edit::UIHandlers::Default, &MovementComponent::m_fAcceleration, "Acceleration", "The acceleration of the character.")
+                    ->Attribute(AZ::Edit::Attributes::ReadOnly, &MovementComponent::isAccelerationReadOnly)
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &MovementComponent::m_fAirControlFactor, "Air Control Factor",
+                        "How much of the ground acceleration still applies while the character is "
+                        "airborne. 1 gives full arcade control - releasing the key stops the character "
+                        "in mid-air. 0 gives pure inertia - the take-off velocity is kept until landing "
+                        "and input is ignored. Small values let the player nudge the trajectory without "
+                        "reversing it. Has no effect unless Acceleration is enabled, because without it "
+                        "the velocity snaps straight to the target.")
+                    ->Attribute(AZ::Edit::Attributes::ReadOnly, &MovementComponent::isAirControlReadOnly)
                         ->Attribute(AZ::Edit::Attributes::ReadOnly, &MovementComponent::isAccelerationReadOnly)
                     ->DataElement(AZ::Edit::UIHandlers::Default, &MovementComponent::isBackwardSpeedMultiplierEnabled, "Enable Backward Speed Multiplier", "Enable or disable the backward speed multiplier for the character's movement.")
                         ->Attribute(AZ::Edit::Attributes::ChangeNotify, AZ::Edit::PropertyRefreshLevels::AttributesAndValues)
@@ -197,8 +218,10 @@ namespace ModularCharacterController
         return worldMoveDirection;
     }
 
-    AZ::Vector3 MovementComponent::CalculateAcceleration(float deltaTime, const AZ::Vector3& targetVelocity) const {
-        float t = AZStd::clamp(m_fAcceleration * deltaTime, 0.0f, 1.0f);
+    AZ::Vector3 MovementComponent::CalculateAcceleration(float deltaTime, const AZ::Vector3& targetVelocity, float rate) const {
+        // rate is not an acceleration in m/s^2 - it is the fraction of the remaining gap closed
+        // per second. The caller decides what it is, which is where air control comes in.
+        float t = AZStd::clamp(rate * deltaTime, 0.0f, 1.0f);
         return m_currentVelocity.Lerp(targetVelocity, t);
     }
 

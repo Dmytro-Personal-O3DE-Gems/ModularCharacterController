@@ -95,10 +95,16 @@ namespace ModularCharacterController
         float m_fAcceleration = 10.0f;
         bool isAccelerationReadOnly() const { return !isAccelerationEnabled; }
 
+        // Fraction of the ground acceleration that still applies while airborne.
+        // 1 = full arcade control, 0 = pure inertia. Meaningless without acceleration, because
+        // then the velocity snaps to the target and there is no rate left to scale.
+        float m_fAirControlFactor = 1.0f;
+        bool isAirControlReadOnly() const { return !isAccelerationEnabled; }
+
         // Input methods
         AZ::Vector3 CalculateLocalMoveDirection() const;
         AZ::Vector3 CalculateWorldMoveDirection() const;
-        AZ::Vector3 CalculateAcceleration(float deltaTime, const AZ::Vector3& targetVelocity) const;
+        AZ::Vector3 CalculateAcceleration(float deltaTime, const AZ::Vector3& targetVelocity, float rate) const;
 
         void ApplyMovement(const AZ::Vector3 worldVelocity);
 
