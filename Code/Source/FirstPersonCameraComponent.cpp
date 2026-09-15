@@ -12,11 +12,28 @@ namespace ModularCharacterController
     void FirstPersonCameraComponent::Activate()
     {
         FirstPersonCameraRequestBus::Handler::BusConnect(GetEntityId());
+
+        StartingPointInput::InputEventNotificationBus::MultiHandler::BusConnect(YawEventId);
+        StartingPointInput::InputEventNotificationBus::MultiHandler::BusConnect(PitchEventId);
     }
 
     void FirstPersonCameraComponent::Deactivate()
     {
         FirstPersonCameraRequestBus::Handler::BusDisconnect(GetEntityId());
+
+        StartingPointInput::InputEventNotificationBus::MultiHandler::BusDisconnect();
+    }
+
+    void FirstPersonCameraComponent::OnPressed(float value)
+    {
+    }
+
+    void FirstPersonCameraComponent::OnHeld(float value)
+    {
+    }
+
+    void FirstPersonCameraComponent::OnReleased(float value)
+    {
     }
 
     void FirstPersonCameraComponent::Reflect(AZ::ReflectContext* context)
@@ -31,7 +48,7 @@ namespace ModularCharacterController
             {
                 editContext->Class<FirstPersonCameraComponent>("FirstPersonCameraComponent", "[Description of functionality provided by this component]")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                    ->Attribute(AZ::Edit::Attributes::Category, "ComponentCategory")
+                    ->Attribute(AZ::Edit::Attributes::Category, "Modular Character Controller")
                     ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/Component_Placeholder.svg")
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
                     ;
