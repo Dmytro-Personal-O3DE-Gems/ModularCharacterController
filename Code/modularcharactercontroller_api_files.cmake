@@ -9,4 +9,5 @@ set(FILES
     Include/ModularCharacterController/JumpInterface.h
     Include/ModularCharacterController/FirstPersonCameraInterface.h
     Include/ModularCharacterController/ViewAnglesInterface.h
+    Include/ModularCharacterController/ViewModeInterface.h
 )

@@ -20,7 +20,7 @@ namespace ModularCharacterController
                 ->Field("CrouchJumpMode", &JumpComponent::m_eCrouchJumpMode)
                 ->Field("JumpBufferTime", &JumpComponent::m_fJumpBufferTime)
                 ->Field("HeadHitCheckMargin", &JumpComponent::m_fHeadHitMinStallTime)
-                ->Field("HeadHitCheckMargin", &JumpComponent::m_fHeadHitStallRatio)
+                ->Field("HeadHitStallRatio", &JumpComponent::m_fHeadHitStallRatio)
                 ->Field("VariableHeightEnabled", &JumpComponent::m_bVariableHeightEnabled)
                 ->Field("JumpCutFactor", &JumpComponent::m_fJumpCutFactor)
                 ->Field("CoyoteTimeEnabled", &JumpComponent::m_bCoyoteTimeEnabled)

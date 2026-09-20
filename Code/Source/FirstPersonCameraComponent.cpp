@@ -13,9 +13,15 @@ namespace ModularCharacterController
     {
         FirstPersonCameraRequestBus::Handler::BusConnect(GetEntityId());
 
+        Camera::CameraRequestBus::Event(m_cameraEntityId, &Camera::CameraRequestBus::Events::MakeActiveView);
+
         if (m_cameraEntityId.IsValid())
         {
             AZ::EntityBus::Handler::BusConnect(m_cameraEntityId);
+        } 
+        else
+        {
+			AZ_Warning("FirstPersonCameraComponent", false, "Camera entity is not valid. Please set a camera entity in the component properties.");
         }
 
     }
@@ -26,8 +32,13 @@ namespace ModularCharacterController
         AZ::EntityBus::Handler::BusDisconnect();
     }
 
-    void FirstPersonCameraComponent::OnCharacterActivated(const AZ::EntityId& entityId)
+    void FirstPersonCameraComponent::OnTick(float deltaTime, AZ::ScriptTimePoint time)
     {
+    }
+
+    int FirstPersonCameraComponent::GetTickOrder()
+    {
+        return AZ::ComponentTickBus::TICK_GAME;
     }
 
     void FirstPersonCameraComponent::Reflect(AZ::ReflectContext* context)
@@ -36,7 +47,7 @@ namespace ModularCharacterController
         {
             serializeContext->Class<FirstPersonCameraComponent, AZ::Component>()
                 ->Version(1)
-				->Field("CameraEntityId", &FirstPersonCameraComponent::m_cameraEntityId)
+				->Field("CameraEntity", &FirstPersonCameraComponent::m_cameraEntityId)
                 ;
 
             if (AZ::EditContext* editContext = serializeContext->GetEditContext())
@@ -67,10 +78,13 @@ namespace ModularCharacterController
 
     void FirstPersonCameraComponent::GetIncompatibleServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& incompatible)
     {
+		incompatible.push_back(AZ_CRC_CE("FirstPersonCameraComponentService"));
     }
 
     void FirstPersonCameraComponent::GetRequiredServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& required)
     {
+		required.push_back(AZ_CRC_CE("CameraService"));
+		required.push_back(AZ_CRC_CE("ViewAnglesComponentService"));
     }
 
     void FirstPersonCameraComponent::GetDependentServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& dependent)

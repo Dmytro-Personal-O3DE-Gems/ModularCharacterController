@@ -27,8 +27,7 @@ namespace ModularCharacterController
         void Deactivate() override;
 
         void OnTick([[maybe_unused]] float deltaTime, [[maybe_unused]] AZ::ScriptTimePoint time) override;
-
-        void OnCharacterActivated([[maybe_unused]] const AZ::EntityId& entityId) override;
+        int  GetTickOrder() override;
 
     private:
         AZ::EntityId m_cameraEntityId;
