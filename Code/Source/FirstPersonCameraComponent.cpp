@@ -13,26 +13,20 @@ namespace ModularCharacterController
     {
         FirstPersonCameraRequestBus::Handler::BusConnect(GetEntityId());
 
-        StartingPointInput::InputEventNotificationBus::MultiHandler::BusConnect(YawEventId);
-        StartingPointInput::InputEventNotificationBus::MultiHandler::BusConnect(PitchEventId);
+        if (m_cameraEntityId.IsValid())
+        {
+            AZ::EntityBus::Handler::BusConnect(m_cameraEntityId);
+        }
+
     }
 
     void FirstPersonCameraComponent::Deactivate()
     {
         FirstPersonCameraRequestBus::Handler::BusDisconnect(GetEntityId());
-
-        StartingPointInput::InputEventNotificationBus::MultiHandler::BusDisconnect();
+        AZ::EntityBus::Handler::BusDisconnect();
     }
 
-    void FirstPersonCameraComponent::OnPressed(float value)
-    {
-    }
-
-    void FirstPersonCameraComponent::OnHeld(float value)
-    {
-    }
-
-    void FirstPersonCameraComponent::OnReleased(float value)
+    void FirstPersonCameraComponent::OnCharacterActivated(const AZ::EntityId& entityId)
     {
     }
 
@@ -42,15 +36,18 @@ namespace ModularCharacterController
         {
             serializeContext->Class<FirstPersonCameraComponent, AZ::Component>()
                 ->Version(1)
+				->Field("CameraEntityId", &FirstPersonCameraComponent::m_cameraEntityId)
                 ;
 
             if (AZ::EditContext* editContext = serializeContext->GetEditContext())
             {
                 editContext->Class<FirstPersonCameraComponent>("FirstPersonCameraComponent", "[Description of functionality provided by this component]")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                    ->Attribute(AZ::Edit::Attributes::Category, "Modular Character Controller")
+                    ->Attribute(AZ::Edit::Attributes::Category, "Modular Character Controller/View")
                     ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/Component_Placeholder.svg")
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
+
+					->DataElement(AZ::Edit::UIHandlers::EntityId, &FirstPersonCameraComponent::m_cameraEntityId, "Camera Entity", "The entity that represents the first-person camera.")
                     ;
             }
         }

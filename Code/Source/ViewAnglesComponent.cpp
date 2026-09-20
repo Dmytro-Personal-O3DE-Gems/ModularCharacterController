@@ -12,11 +12,38 @@ namespace ModularCharacterController
     void ViewAnglesComponent::Activate()
     {
         ViewAnglesRequestBus::Handler::BusConnect(GetEntityId());
+
+        StartingPointInput::InputEventNotificationBus::MultiHandler::BusConnect(LookMouseXEventId);
+        StartingPointInput::InputEventNotificationBus::MultiHandler::BusConnect(LookMouseYEventId);
+        StartingPointInput::InputEventNotificationBus::MultiHandler::BusConnect(LookStickXEventId);
+        StartingPointInput::InputEventNotificationBus::MultiHandler::BusConnect(LookStickYEventId);
     }
 
     void ViewAnglesComponent::Deactivate()
     {
         ViewAnglesRequestBus::Handler::BusDisconnect(GetEntityId());
+        StartingPointInput::InputEventNotificationBus::MultiHandler::BusDisconnect();
+    }
+
+    void ViewAnglesComponent::OnTick(float deltaTime, AZ::ScriptTimePoint time)
+    {
+    }
+
+    int ViewAnglesComponent::GetTickOrder()
+    {
+        return 0;
+    }
+
+    void ViewAnglesComponent::OnPressed(float value)
+    {
+    }
+
+    void ViewAnglesComponent::OnHeld(float value)
+    {
+    }
+
+    void ViewAnglesComponent::OnReleased(float value)
+    {
     }
 
     void ViewAnglesComponent::Reflect(AZ::ReflectContext* context)

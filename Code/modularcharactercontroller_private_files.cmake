@@ -15,4 +15,6 @@ set(FILES
     Source/JumpComponent.cpp
     Source/FirstPersonCameraComponent.h
     Source/FirstPersonCameraComponent.cpp
+    Source/ViewAnglesComponent.h
+    Source/ViewAnglesComponent.cpp
 )

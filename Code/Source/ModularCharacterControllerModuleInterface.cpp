@@ -11,6 +11,7 @@
 #include "CrouchComponent.h"
 #include "JumpComponent.h"
 #include "FirstPersonCameraComponent.h"
+#include "ViewAnglesComponent.h"
 
 namespace ModularCharacterController
 {
@@ -32,6 +33,7 @@ namespace ModularCharacterController
             CrouchComponent::CreateDescriptor(),
             JumpComponent::CreateDescriptor(),
             FirstPersonCameraComponent::CreateDescriptor(),
+			ViewAnglesComponent::CreateDescriptor(),
             });
     }
 
