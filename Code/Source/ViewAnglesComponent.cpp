@@ -39,11 +39,11 @@ namespace ModularCharacterController
         // Mouse deltas are already angular increments: scaling them by deltaTime would tie
         // the sensitivity to the frame rate. Stick values are rates, so for them it is
         // mandatory - the same distinction that decided the two sensitivity units.
-        const float mouseYaw = m_fMouseDeltaX * m_fMouseSensitivityX;
-        const float stickYaw = m_fStickX * m_fStickSensitivityX * deltaTime;
+        const float mouseYaw = -m_fMouseDeltaX * m_fMouseSensitivityX;
+        const float stickYaw = -m_fStickX * m_fStickSensitivityX * deltaTime;
 
-        const float mousePitch = m_fMouseDeltaY * m_fMouseSensitivityY * (m_bInvertMouseY ? -1.0f : 1.0f);
-        const float stickPitch = m_fStickY * m_fStickSensitivityY * deltaTime * (m_bInvertStickY ? -1.0f : 1.0f);
+        const float mousePitch = -m_fMouseDeltaY * m_fMouseSensitivityY * (m_bInvertMouseY ? -1.0f : 1.0f);
+        const float stickPitch = -m_fStickY * m_fStickSensitivityY * deltaTime * (m_bInvertStickY ? -1.0f : 1.0f);
 
         m_fYawDegrees += mouseYaw + stickYaw;
 
