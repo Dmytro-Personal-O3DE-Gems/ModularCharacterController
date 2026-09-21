@@ -31,7 +31,7 @@ namespace ModularCharacterController
         //! True for a first person view, and for a third person view that turns the character
         //! with the camera. False for an orbiting view, where the camera circles a body that
         //! stays where it is.
-        virtual bool GetBodyFollowsYaw() const = 0
+        virtual bool GetBodyFollowsYaw() const = 0;
     };
 
     using ViewModeRequestBus = AZ::EBus<ViewModeRequests>;
