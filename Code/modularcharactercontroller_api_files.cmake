@@ -10,4 +10,5 @@ set(FILES
     Include/ModularCharacterController/FirstPersonCameraInterface.h
     Include/ModularCharacterController/ViewAnglesInterface.h
     Include/ModularCharacterController/ViewModeInterface.h
+    Include/ModularCharacterController/ViewOffsetInterface.h
 )

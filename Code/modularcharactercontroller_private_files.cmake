@@ -17,4 +17,6 @@ set(FILES
     Source/FirstPersonCameraComponent.cpp
     Source/ViewAnglesComponent.h
     Source/ViewAnglesComponent.cpp
+    Source/ViewOffsetInterface.h
+    Source/ViewOffsetInterface.cpp
 )
