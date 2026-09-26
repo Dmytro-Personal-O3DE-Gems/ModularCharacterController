@@ -94,18 +94,36 @@ namespace ModularCharacterController
 
             if (AZ::EditContext* editContext = serializeContext->GetEditContext())
             {
-                editContext->Class<GroundTrackerComponent>("GroundTrackerComponent", "[Description of functionality provided by this component]")
+                editContext->Class<GroundTrackerComponent>("Ground Tracker",
+                    "Owns the answer to \"is this character on the ground\". Filters out the single-frame "
+                    "dropouts the physics ground test produces on stairs and seams, and reports a landing "
+                    "together with the impact speed - a value the engine erases the instant it finds ground, "
+                    "so nothing can ask for it afterwards. Makes no decisions of its own: it measures and "
+                    "reports, and each consumer applies its own thresholds. Requires the PhysX Character "
+                    "Gameplay component.")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                    ->Attribute(AZ::Edit::Attributes::Category, "ComponentCategory")
+                    ->Attribute(AZ::Edit::Attributes::Category, "Modular Character Controller/Core")
                     ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/Component_Placeholder.svg")
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
+
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &GroundTrackerComponent::m_fGroundLossGraceTime,
+                        "Ground Loss Grace Time",
+                        "How long the physics ground test must keep reporting no ground before the character "
+                        "counts as airborne, in seconds. The engine tests ground with a 2 cm overlap box, so "
+                        "stairs, seams and slope crests produce single airborne frames during ordinary walking, "
+                        "and this absorbs them. Touching down is never delayed by it - only leaving the ground "
+                        "is. Two consequences worth knowing: a fall shorter than this raises no landing event "
+                        "at all, and the same window is what still allows a jump just after stepping off an "
+                        "edge. Around 0.1 covers a stair step; past 0.2 it starts to read as jumping from "
+                        "mid-air.")
+                    ->Attribute(AZ::Edit::Attributes::Min, 0.0f)
                     ;
             }
         }
 
         if (AZ::BehaviorContext* behaviorContext = azrtti_cast<AZ::BehaviorContext*>(context))
         {
-            behaviorContext->Class<GroundTrackerComponent>("GroundTracker Component Group")
+            behaviorContext->Class<GroundTrackerComponent>("GroundTracker")
                 ->Attribute(AZ::Script::Attributes::Category, "ModularCharacterController Gem Group")
                 ;
         }
