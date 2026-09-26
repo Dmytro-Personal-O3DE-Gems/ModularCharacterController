@@ -12,11 +12,21 @@ namespace ModularCharacterController
     void ViewOffsetComponent::Activate()
     {
         ViewOffsetRequestBus::Handler::BusConnect(GetEntityId());
+        AZ::TickBus::Handler::BusConnect();
     }
 
     void ViewOffsetComponent::Deactivate()
     {
         ViewOffsetRequestBus::Handler::BusDisconnect(GetEntityId());
+        AZ::TickBus::Handler::BusDisconnect();
+    }
+
+    void ViewOffsetComponent::OnTick([[maybe_unused]] float deltaTime, [[maybe_unused]] AZ::ScriptTimePoint time)
+    {
+    }
+
+    void ViewOffsetComponent::SetOffset([[maybe_unused]] AZ::Crc32 channel, [[maybe_unused]] const AZ::Vector3& offset)
+    {
     }
 
     void ViewOffsetComponent::Reflect(AZ::ReflectContext* context)
@@ -31,7 +41,7 @@ namespace ModularCharacterController
             {
                 editContext->Class<ViewOffsetComponent>("ViewOffsetComponent", "[Description of functionality provided by this component]")
                     ->ClassElement(AZ::Edit::ClassElements::EditorData, "")
-                    ->Attribute(AZ::Edit::Attributes::Category, "ComponentCategory")
+                    ->Attribute(AZ::Edit::Attributes::Category, "Modular Character Controller/View")
                     ->Attribute(AZ::Edit::Attributes::Icon, "Icons/Components/Component_Placeholder.svg")
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
                     ;

@@ -3,6 +3,10 @@
 
 #include <AzCore/Component/ComponentBus.h>
 
+#include <AzCore/Component/ComponentBus.h>
+#include <AzCore/Math/Vector3.h>
+#include <AzCore/Math/Crc.h>
+
 namespace ModularCharacterController
 {
     class ViewOffsetRequests
@@ -11,11 +15,7 @@ namespace ModularCharacterController
     public:
         AZ_RTTI(ModularCharacterController::ViewOffsetRequests, "{E8587510-494C-4F12-AA9A-F4B4DE216F45}");
 
-        // Put your public request methods here.
-        
-        // Put notification events here. Examples:
-        // void RegisterEvent(AZ::EventHandler<...> notifyHandler);
-        // AZ::Event<...> m_notifyEvent1;
+        virtual void SetOffset(AZ::Crc32 channel, const AZ::Vector3& offset) = 0;
         
     };
 

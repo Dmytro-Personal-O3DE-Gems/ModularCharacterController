@@ -13,6 +13,7 @@
 #include "FirstPersonCameraComponent.h"
 #include "ViewAnglesComponent.h"
 #include "ViewOffsetComponent.h"
+#include "GroundTrackerComponent.h"
 
 namespace ModularCharacterController
 {
@@ -36,6 +37,7 @@ namespace ModularCharacterController
             FirstPersonCameraComponent::CreateDescriptor(),
 			ViewAnglesComponent::CreateDescriptor(),
             ViewOffsetComponent::CreateDescriptor(),
+			GroundTrackerComponent::CreateDescriptor(),
             });
     }
 

@@ -11,4 +11,5 @@ set(FILES
     Include/ModularCharacterController/ViewAnglesInterface.h
     Include/ModularCharacterController/ViewModeInterface.h
     Include/ModularCharacterController/ViewOffsetInterface.h
+    Include/ModularCharacterController/GroundTrackerInterface.h
 )
