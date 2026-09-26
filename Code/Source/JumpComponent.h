@@ -5,6 +5,7 @@
 #include <ModularCharacterController/JumpInterface.h>
 #include <ModularCharacterController/MovementInterface.h>
 #include <ModularCharacterController/CrouchInterface.h>
+#include <ModularCharacterController/GroundTrackerInterface.h>
 
 #include <AzCore/Component/TickBus.h>
 

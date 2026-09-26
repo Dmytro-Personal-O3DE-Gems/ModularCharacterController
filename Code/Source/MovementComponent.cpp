@@ -41,7 +41,10 @@ namespace ModularCharacterController
         const AZ::Vector3 targetVelocity = CalculateWorldMoveDirection();
 
         // Asked once per tick on purpose: IsGrounded runs a fresh overlap query on every call.
-        const bool isGrounded = IsGrounded();
+        bool isGrounded = false;
+
+        GroundTrackerRequestBus::EventResult(
+			isGrounded, GetEntityId(), &GroundTrackerRequests::GetIsGrounded);
 
         // Air control scales how fast the current velocity is allowed to chase the target while
         // the character is off the ground. A factor of 1 behaves exactly like the ground, 0
@@ -137,7 +140,7 @@ namespace ModularCharacterController
         required.push_back(AZ_CRC_CE("InputConfigurationService"));
         // PhysicsCharacterControllerService is required for the character's physics-based movement
         required.push_back(AZ_CRC_CE("PhysicsCharacterControllerService"));
-        required.push_back(AZ_CRC_CE("PhysicsCharacterGameplayService"));
+        required.push_back(AZ_CRC_CE("GroundTrackerComponentService"));
     }
 
     void MovementComponent::GetDependentServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& dependent)
@@ -315,15 +318,6 @@ namespace ModularCharacterController
             GetEntityId(), &PhysX::CharacterControllerRequests::SetRadius, radius);
 
         m_fCapsuleRadius = radius;
-    }
-    bool MovementComponent::IsGrounded()
-    {
-        bool isOnGround = false;
-
-        PhysX::CharacterGameplayRequestBus::EventResult(isOnGround, GetEntityId(),
-            &PhysX::CharacterGameplayRequests::IsOnGround);
-
-        return isOnGround;
     }
     // ~Calculate Move Direction methods
 

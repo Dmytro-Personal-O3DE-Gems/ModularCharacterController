@@ -154,7 +154,7 @@ namespace ModularCharacterController
         required.push_back(AZ_CRC_CE("InputConfigurationService"));
         // PhysicsCharacterControllerService is required for the character's physics-based movement
         required.push_back(AZ_CRC_CE("PhysicsCharacterControllerService"));
-        required.push_back(AZ_CRC_CE("PhysicsCharacterGameplayService"));
+        required.push_back(AZ_CRC_CE("GroundTrackerComponentService"));
     }
 
     void JumpComponent::GetDependentServices([[maybe_unused]] AZ::ComponentDescriptor::DependencyArrayType& dependent)
@@ -203,7 +203,7 @@ namespace ModularCharacterController
     {
         // Refresh the world state everything below reads. One query per frame means every
         // decision in this tick sees the same answer about the ground.
-        MovementRequestBus::EventResult(m_bIsGrounded, GetEntityId(), &MovementRequests::IsGrounded);
+		GroundTrackerRequestBus::EventResult(m_bIsGrounded, GetEntityId(), &GroundTrackerRequests::GetIsGrounded);
 
         if (m_bIsGrounded)
         {

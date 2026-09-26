@@ -2,10 +2,9 @@
 
 #include <AzCore/Component/Component.h>
 #include <ModularCharacterController/MovementInterface.h>
+#include <ModularCharacterController/GroundTrackerInterface.h>
 
 #include <AzCore/Component/TickBus.h>
-
-#include <PhysX/CharacterGameplayBus.h>
 
 // Input
 #include <StartingPointInput/InputEventNotificationBus.h>
@@ -120,8 +119,6 @@ namespace ModularCharacterController
 
         void SetCapsuleHeight(float height) override;
         void SetCapsuleRadius(float radius) override;
-
-        bool IsGrounded() override;
 
         // Input events
         inline static const StartingPointInput::InputEventNotificationId ForwardEventId{ "Forward" };
