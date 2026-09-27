@@ -42,7 +42,8 @@ namespace ModularCharacterController
         // Computed once per tick, not inside the getter: smoothing will step with
         // deltaTime, and that step must happen once a frame, not once per reader.
         AZ::Vector3 m_vTotalOffset = AZ::Vector3::CreateZero();
-
+        
+		float m_fCrouchOffsetZ = 0.0f; // The current offset from the standing height, smoothed over time.
 		float m_fCrouchSmoothingRate = 10.0f; // How fast the view catches up to the crouch height change.
     };
 } // namespace ModularCharacterController

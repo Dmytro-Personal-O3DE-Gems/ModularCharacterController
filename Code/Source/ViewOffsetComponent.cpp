@@ -1,6 +1,8 @@
 
 #include "ViewOffsetComponent.h"
 
+#include <AzCore/std/algorithm.h>
+
 #include <AzCore/Serialization/SerializeContext.h>
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/RTTI/BehaviorContext.h>
@@ -34,7 +36,10 @@ namespace ModularCharacterController
         // Both heights read 0 until OnCharacterActivated fills them in Movement, and 0 - 0
         // is a harmless zero offset.
         const float deltaZ = currentHeight - standingHeight;
-        m_vTotalOffset = AZ::Vector3(0.0f, 0.0f, deltaZ);
+
+		m_fCrouchOffsetZ += (deltaZ - m_fCrouchOffsetZ) * AZStd::clamp(m_fCrouchSmoothingRate * deltaTime, 0.0f, 1.0f);
+
+        m_vTotalOffset = AZ::Vector3(0.0f, 0.0f, m_fCrouchOffsetZ);
     }
 
     void ViewOffsetComponent::SetOffset([[maybe_unused]] AZ::Crc32 channel, [[maybe_unused]] const AZ::Vector3& offset)
