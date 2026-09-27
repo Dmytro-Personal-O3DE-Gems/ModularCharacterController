@@ -119,6 +119,7 @@ namespace ModularCharacterController
     void JumpComponent::Activate()
     {
         JumpRequestBus::Handler::BusConnect(GetEntityId());
+        GroundTrackerNotificationBus::Handler::BusConnect(GetEntityId());
         AZ::TickBus::Handler::BusConnect();
 
         StartingPointInput::InputEventNotificationBus::MultiHandler::BusConnect(JumpEventId);
@@ -129,6 +130,7 @@ namespace ModularCharacterController
     void JumpComponent::Deactivate()
     {
         JumpRequestBus::Handler::BusDisconnect(GetEntityId());
+		GroundTrackerNotificationBus::Handler::BusDisconnect(GetEntityId());
         AZ::TickBus::Handler::BusDisconnect();
 
         StartingPointInput::InputEventNotificationBus::MultiHandler::BusDisconnect();
@@ -210,7 +212,6 @@ namespace ModularCharacterController
             // The coyote window is measured from the moment footing is lost, so while we still
             // have it the counter stays at zero rather than freezing at its last value.
             m_fTimeSinceGrounded = 0.0f;
-            m_bIsJumped = false;
         }
         else
         {
@@ -242,6 +243,11 @@ namespace ModularCharacterController
     int JumpComponent::GetTickOrder()
     {
         return AZ::ComponentTickBus::TICK_GAME;
+    }
+
+    void JumpComponent::OnLanded([[maybe_unused]] const LandingInfo& landing)
+    {
+		m_bIsJumped = false;
     }
 
 

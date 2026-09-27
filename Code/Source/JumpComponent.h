@@ -43,6 +43,7 @@ namespace ModularCharacterController
         , public JumpRequestBus::Handler
         , protected AZ::TickBus::Handler
         , protected StartingPointInput::InputEventNotificationBus::MultiHandler
+		, protected GroundTrackerNotificationBus::Handler
     {
     public:
         AZ_COMPONENT_DECL(JumpComponent);
@@ -65,6 +66,8 @@ namespace ModularCharacterController
 
         void OnTick(float deltaTime, AZ::ScriptTimePoint time) override;
         int  GetTickOrder() override;
+
+        void OnLanded([[maybe_unused]] const LandingInfo& landing) override;
 
     private:
         // Settings
