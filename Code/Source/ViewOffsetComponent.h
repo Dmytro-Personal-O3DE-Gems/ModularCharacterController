@@ -8,6 +8,7 @@
 #include <AzFramework/Physics/CharacterBus.h> 
 #include <AzCore/Component/TickBus.h>
 
+#include <AzCore/Math/Vector3.h>
 #include <AzCore/Math/Crc.h>
 #include <AzCore/std/containers/fixed_vector.h>
 
@@ -35,8 +36,13 @@ namespace ModularCharacterController
         void OnTick(float deltaTime, [[maybe_unused]] AZ::ScriptTimePoint time) override;
 
         void SetOffset(AZ::Crc32 channel, const AZ::Vector3& offset) override;
+        AZ::Vector3 GetOffset() const override { return m_vTotalOffset; }
 
     private:
-        float m_fVelocity = 0.0f;
+        // Computed once per tick, not inside the getter: smoothing will step with
+        // deltaTime, and that step must happen once a frame, not once per reader.
+        AZ::Vector3 m_vTotalOffset = AZ::Vector3::CreateZero();
+
+		float m_fCrouchSmoothingRate = 10.0f; // How fast the view catches up to the crouch height change.
     };
 } // namespace ModularCharacterController

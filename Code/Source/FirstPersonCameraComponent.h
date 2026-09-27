@@ -5,8 +5,10 @@
 #include <ModularCharacterController/FirstPersonCameraInterface.h>
 #include <ModularCharacterController/ViewModeInterface.h>
 #include <ModularCharacterController/ViewAnglesInterface.h>
+#include <ModularCharacterController/ViewOffsetInterface.h>
 
 #include <AzCore/Component/TickBus.h>
+#include <AzCore/Component/TransformBus.h>
 #include <AzCore/Component/EntityBus.h>
 #include <AzFramework/Components/CameraBus.h>
 
@@ -51,5 +53,10 @@ namespace ModularCharacterController
 
         // The only place in the gem that knows which entity carries the camera.
         AZ::EntityId m_cameraEntityId;
+
+        // The child camera's authored local translation, captured once when that entity
+        // activates. Every frame writes base + offset as an absolute value; re-reading the
+        // current translation instead would add the delta to itself and drift away.
+        AZ::Vector3 m_vInitialCameraTranslation = AZ::Vector3::CreateZero();
     };
 } // namespace ModularCharacterController

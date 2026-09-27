@@ -62,6 +62,9 @@ namespace ModularCharacterController
         Camera::CameraRequestBus::Event(
             m_cameraEntityId, &Camera::CameraRequestBus::Events::MakeActiveView);
 
+        AZ::TransformBus::EventResult(
+            m_vInitialCameraTranslation, m_cameraEntityId, &AZ::TransformBus::Events::GetLocalTranslation);
+
         // One-shot. An entity does not activate twice without being deactivated first, and
         // this component has nothing to do on that path. Staying subscribed would start to
         // matter only once characters are spawned and despawned at runtime.
@@ -108,6 +111,13 @@ namespace ModularCharacterController
         AZ::TransformBus::Event(m_cameraEntityId,
             &AZ::TransformBus::Events::SetLocalRotationQuaternion,
             AZ::Quaternion::CreateRotationX(AZ::DegToRad(pitchDegrees)));
+
+        // Local, like pitchDegrees above: produced and consumed inside this call.
+        AZ::Vector3 cameraOffset = AZ::Vector3::CreateZero();
+        ViewOffsetRequestBus::EventResult(
+            cameraOffset, GetEntityId(), &ViewOffsetRequestBus::Events::GetOffset);
+        AZ::TransformBus::Event(m_cameraEntityId,
+            &AZ::TransformBus::Events::SetLocalTranslation, m_vInitialCameraTranslation + cameraOffset);
     }
 
     void FirstPersonCameraComponent::Reflect(AZ::ReflectContext* context)
