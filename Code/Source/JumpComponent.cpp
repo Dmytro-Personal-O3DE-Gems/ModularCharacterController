@@ -207,19 +207,6 @@ namespace ModularCharacterController
         // decision in this tick sees the same answer about the ground.
 		GroundTrackerRequestBus::EventResult(m_bIsGrounded, GetEntityId(), &GroundTrackerRequests::GetIsGrounded);
 
-        if (m_bIsGrounded)
-        {
-            // The coyote window is measured from the moment footing is lost, so while we still
-            // have it the counter stays at zero rather than freezing at its last value.
-            m_fTimeSinceGrounded = 0.0f;
-        }
-        else
-        {
-            // deltaTime is real seconds since the previous tick, so the total stays correct
-            // whatever the frame rate does.
-            m_fTimeSinceGrounded += deltaTime;
-        }
-
         m_fTimeSinceJumpPressed += deltaTime;
 
         // A buffered press is spent only when a jump actually happens, so a press made in
@@ -254,9 +241,6 @@ namespace ModularCharacterController
 
     bool JumpComponent::CanJumpNow() const
     {
-        // A jump already in flight blocks everything below, the coyote window included.
-        // Without this, leaving the ground by jumping would open the window and hand out
-        // a second jump in mid-air.
         if (m_bIsJumped)
         {
             return false;
@@ -267,8 +251,18 @@ namespace ModularCharacterController
             return true;
         }
 
-        // Airborne: the only remaining way in is a coyote window that is still open.
-        return m_bCoyoteTimeEnabled && m_fTimeSinceGrounded <= m_fCoyoteTime;
+        if (!m_bCoyoteTimeEnabled)
+        {
+            return false;
+        }
+
+        // Seeded past the window on purpose: if nothing answers, the coyote check must fail
+        // closed rather than hand out a free mid-air jump.
+        float timeSinceGroundLost = m_fCoyoteTime + 1.0f;
+        GroundTrackerRequestBus::EventResult(
+            timeSinceGroundLost, GetEntityId(), &GroundTrackerRequests::GetTimeSinceGroundLost);
+
+        return timeSinceGroundLost <= m_fCoyoteTime;
     }
 
     bool JumpComponent::ResolveCrouch()

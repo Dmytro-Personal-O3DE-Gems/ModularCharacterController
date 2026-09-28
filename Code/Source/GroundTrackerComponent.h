@@ -25,6 +25,7 @@ namespace ModularCharacterController
         static void GetDependentServices(AZ::ComponentDescriptor::DependencyArrayType& dependent);
 
 		bool GetIsGrounded() override { return m_isGrounded; }
+		float GetTimeSinceGroundLost() const override { return m_fTimeSinceGroundLost; }
 
     protected:
         void Activate() override;
@@ -35,7 +36,7 @@ namespace ModularCharacterController
 	private:
         bool  m_isGrounded = true;              // engine's own default when no character is present
         float m_fTimeSinceGroundLost = 0.0f;    // grows while the raw signal says "airborne"
-        float m_fGroundLossGraceTime = 0.1f;    // reflected, editable
+        float m_fGroundLossGraceTime = 0.05f;   // reflected, editable
 
         //! Snapshot of the previous airborne frame. Exists because the engine destroys the real
         //! value the instant it finds ground - see the comment in OnTick.

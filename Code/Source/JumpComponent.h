@@ -97,7 +97,6 @@ namespace ModularCharacterController
         // State
         bool m_bIsJumped = false;
         bool m_bIsGrounded = false;
-        float m_fTimeSinceGrounded = 0.0f;
         // A press older than this window is treated as absent. The field starts at the sentinel
         // and returns to it once a press has been spent.
         static constexpr float NoBufferedJump = 1000.0f;

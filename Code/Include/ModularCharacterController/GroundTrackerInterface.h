@@ -14,6 +14,7 @@ namespace ModularCharacterController
         static const AZ::EBusHandlerPolicy HandlerPolicy = AZ::EBusHandlerPolicy::Single;
 
         virtual bool GetIsGrounded() = 0;
+        virtual float GetTimeSinceGroundLost() const = 0;
     };
 
     using GroundTrackerRequestBus = AZ::EBus<GroundTrackerRequests>;
@@ -44,7 +45,7 @@ namespace ModularCharacterController
         //! Not pure virtual on purpose: a listener that only cares about future events of
         //! this bus must not be forced to implement this one. Same convention as
         //! Physics::CharacterNotifications in the engine.
-        virtual void OnLanded([[maybe_unused]] const LandingInfo& landing) {}
+        virtual void OnLanded([[maybe_unused]] const LandingInfo& landing) = 0;
     };
 
     using GroundTrackerNotificationBus = AZ::EBus<GroundTrackerNotifications>;
