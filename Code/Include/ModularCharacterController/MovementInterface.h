@@ -4,6 +4,8 @@
 #include <AzCore/Component/ComponentBus.h>
 #include <AzCore/Math/Crc.h>
 
+#include <AzFramework/Physics/Collision/CollisionGroups.h>
+
 namespace ModularCharacterController
 {
     namespace SpeedChannels
@@ -36,6 +38,13 @@ namespace ModularCharacterController
 
         virtual void SetCapsuleHeight(float height) = 0;
         virtual void SetCapsuleRadius(float radius) = 0;
+
+        //! What counts as solid for this character, ready to be handed to a scene query.
+        //! Returned already resolved rather than as a CollisionGroups::Id on purpose: every
+        //! lookup in that API silently falls back to CollisionGroup::All when the id is
+        //! unknown, so resolving it per caller would widen each query without anyone noticing.
+        //! One owner resolves, one owner warns.
+        virtual AzPhysics::CollisionGroup GetSolidCollisionGroup() const = 0;
     };
 
     using MovementRequestBus = AZ::EBus<MovementRequests>;

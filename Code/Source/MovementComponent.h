@@ -39,6 +39,8 @@ namespace ModularCharacterController
         static void GetRequiredServices(AZ::ComponentDescriptor::DependencyArrayType& required);
         static void GetDependentServices(AZ::ComponentDescriptor::DependencyArrayType& dependent);
 
+        AzPhysics::CollisionGroup GetSolidCollisionGroup() const override;
+
     protected:
         void Activate() override;
         void Deactivate() override;
@@ -65,16 +67,23 @@ namespace ModularCharacterController
             float     m_scale = 1.0f;
         };
 
+        // Which collision group counts as solid for this character. A null id is a valid
+        // state and means "nothing to exclude" - see GetSolidCollisionGroup().
+        AzPhysics::CollisionGroups::Id m_solidCollisionGroupId;
+
         // A flat list rather than an unordered_map: with 2-5 entries a linear scan over
         // contiguous memory beats a hash lookup, and nothing allocates during a frame.
         static constexpr size_t MaxSpeedChannels = 8;
         AZStd::fixed_vector<SpeedChannelEntry, MaxSpeedChannels> m_speedChannels;
 
+        // Reports a configured group that no longer resolves. Called once, at activation.
+        void ValidateSolidCollisionGroup() const;
+
         void  SetSpeedScale(AZ::Crc32 channel, float scale) override;
         float GetSpeedScale(AZ::Crc32 channel) const override;
         float GetTotalSpeedScale() const override;
 
-
+        
 
         float m_fStandingCapsuleHeight = 0.0f;
         float m_fCurrentCapsuleHeight = 0.0f;

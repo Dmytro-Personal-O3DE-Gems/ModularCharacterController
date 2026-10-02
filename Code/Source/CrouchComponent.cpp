@@ -181,13 +181,20 @@ namespace ModularCharacterController
 
         const float castDistance = (m_fInitialCapsuleHeight - m_fAppliedCrouchHeight) + m_fStandUpSafetyMargin;
 
+        // Seeded with All on purpose: if nobody answers, the check must stay as wide as it can
+        // be. Failing closed here means refusing to stand, which costs the player a keypress;
+        // failing open would push the capsule into a ceiling.
+        AzPhysics::CollisionGroup solidGroup = AzPhysics::CollisionGroup::All;
+        MovementRequestBus::EventResult(
+            solidGroup, GetEntityId(), &MovementRequests::GetSolidCollisionGroup);
+
         AzPhysics::ShapeCastRequest request = AzPhysics::ShapeCastRequestHelpers::CreateSphereCastRequest(
             m_fInitialCapsuleRadius,
             AZ::Transform::CreateTranslation(castStart),
             AZ::Vector3(0.0f, 0.0f, 1.0f),
             castDistance,
             AzPhysics::SceneQuery::QueryType::StaticAndDynamic,
-            AzPhysics::CollisionGroup::All,
+            solidGroup,
             nullptr);
 
         request.m_reportMultipleHits = true;

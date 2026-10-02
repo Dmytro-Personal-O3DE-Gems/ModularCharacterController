@@ -1,6 +1,9 @@
 
 #include "MovementComponent.h"
 
+#include <AzCore/Interface/Interface.h>
+#include <AzFramework/Physics/PhysicsSystem.h>
+
 #include <AzCore/Serialization/SerializeContext.h>
 #include <AzCore/Serialization/EditContext.h>
 #include <AzCore/RTTI/BehaviorContext.h>
@@ -26,6 +29,8 @@ namespace ModularCharacterController
             StartingPointInput::InputEventNotificationId("Right"));
         StartingPointInput::InputEventNotificationBus::MultiHandler::BusConnect(
             StartingPointInput::InputEventNotificationId("Jump"));
+
+        ValidateSolidCollisionGroup();
     }
 
     void MovementComponent::Deactivate()
@@ -34,6 +39,54 @@ namespace ModularCharacterController
         AZ::TickBus::Handler::BusDisconnect();
         Physics::CharacterNotificationBus::Handler::BusDisconnect(GetEntityId());
         StartingPointInput::InputEventNotificationBus::MultiHandler::BusDisconnect();
+    }
+
+    AzPhysics::CollisionGroup MovementComponent::GetSolidCollisionGroup() const
+    {
+        // The id is resolved here and nowhere else. Every lookup in this API - by id or by
+        // name - answers CollisionGroup::All when it does not find the preset, so a caller
+        // doing its own resolve would quietly widen its query and have no way to tell.
+        // A null id lands on the same All, which is also the right answer for a project with
+        // nothing to exclude; ValidateSolidCollisionGroup() separates the two cases.
+        return AzPhysics::GetCollisionGroupById(m_solidCollisionGroupId);
+    }
+
+    void MovementComponent::ValidateSolidCollisionGroup() const
+    {
+        // An unset field is a valid state of the world, not a misconfiguration: a project with
+        // no clip geometry has nothing to exclude. Warning here would fire in every honestly
+        // configured project on every activation, and a warning that always fires is one that
+        // stops being read before the day it matters.
+        if (m_solidCollisionGroupId.m_id.IsNull())
+        {
+            return;
+        }
+
+        auto* physicsSystem = AZ::Interface<AzPhysics::SystemInterface>::Get();
+        if (physicsSystem == nullptr)
+        {
+            return;
+        }
+
+        const AzPhysics::SystemConfiguration* configuration = physicsSystem->GetConfiguration();
+        if (configuration == nullptr)
+        {
+            return;
+        }
+
+        // An empty name means the id points at a preset that is gone. Renaming a preset keeps
+        // its id, so this really does mean deleted - or that the gem was dropped into a project
+        // that never had the group. Unlike the empty field above, somebody made a choice here
+        // and the choice has since broken, while the queries carry on against everything.
+        const AZStd::string groupName =
+            configuration->m_collisionConfig.m_collisionGroups.FindGroupNameById(m_solidCollisionGroupId);
+
+        AZ_Warning("MovementComponent", !groupName.empty(),
+            "Entity '%s' points at a collision group preset that no longer exists in this "
+            "project's PhysX configuration. Checks that ask what is solid for this character "
+            "will fall back to colliding with everything. Pick the group again on the Character "
+            "Movement component, or clear the field if there is nothing to exclude.",
+            GetEntity() != nullptr ? GetEntity()->GetName().c_str() : "<unknown>");
     }
 
     void MovementComponent::OnTick(float deltaTime, [[maybe_unused]] AZ::ScriptTimePoint time)
@@ -73,7 +126,7 @@ namespace ModularCharacterController
                 ->Field("EnableAcceleration", &MovementComponent::isAccelerationEnabled)
                 ->Field("EnableBackwardSpeedMultiplier", &MovementComponent::isBackwardSpeedMultiplierEnabled)
                 ->Field("AirControlFactor", &MovementComponent::m_fAirControlFactor)
-
+                ->Field("SolidCollisionGroup", &MovementComponent::m_solidCollisionGroupId)
                 ;
 
             if (AZ::EditContext* editContext = serializeContext->GetEditContext())
@@ -90,7 +143,7 @@ namespace ModularCharacterController
                     ->Attribute(AZ::Edit::Attributes::AppearsInAddComponentMenu, AZ_CRC_CE("Game"))
 
                     ->DataElement(AZ::Edit::UIHandlers::Default, &MovementComponent::m_fWalkSpeed, "Walk Speed", "The speed at which the character moves.")
-                    
+
                     ->ClassElement(AZ::Edit::ClassElements::Group, "Extra Movement Settings")
                     ->DataElement(AZ::Edit::UIHandlers::Default, &MovementComponent::isAccelerationEnabled, "Enable Acceleration", "Enable or disable acceleration for the character's movement.")
                         ->Attribute(AZ::Edit::Attributes::ChangeNotify, AZ::Edit::PropertyRefreshLevels::AttributesAndValues)
@@ -109,7 +162,19 @@ namespace ModularCharacterController
                         ->Attribute(AZ::Edit::Attributes::ChangeNotify, AZ::Edit::PropertyRefreshLevels::AttributesAndValues)
                     ->DataElement(AZ::Edit::UIHandlers::Default, &MovementComponent::m_fBackwardSpeedMultiplier, "Backward Speed Multiplier", "The multiplier for the speed when moving backward.")
                         ->Attribute(AZ::Edit::Attributes::ReadOnly, &MovementComponent::isBackwardSpeedMultiplierReadOnly)
-    ;
+
+                    ->ClassElement(AZ::Edit::ClassElements::Group, "Collision")
+                    ->DataElement(AZ::Edit::UIHandlers::Default, &MovementComponent::m_solidCollisionGroupId,
+                        "Solid Collision Group",
+                        "Which collision group the character's own checks treat as solid - today the "
+                        "clearance check before standing up out of a crouch. Leaving it empty is a "
+                        "valid choice and not a mistake: with nothing to exclude, colliding with "
+                        "everything is the correct answer, and that is exactly what an empty field "
+                        "resolves to. Set it once the level gains geometry the character must walk "
+                        "on but must not see from these checks - an invisible ramp over a staircase "
+                        "being the usual case. Groups themselves are authored per project in the "
+                        "PhysX Configuration window, so a gem cannot ship one: collision layers are "
+                        "numbered slots in a fixed table and two gems would claim the same slot.")
                     ;
             }
         }
